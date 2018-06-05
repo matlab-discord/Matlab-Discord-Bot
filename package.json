@@ -4,6 +4,7 @@
   "description": "A bot for the Matlab server on Discord.",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "node ./test/main.js"
   },
   "keywords": [
