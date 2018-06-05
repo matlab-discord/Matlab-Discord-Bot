@@ -104,13 +104,22 @@ client.on('message', msg => {
     }
 });
 
-client.login(process.env.BOT_TOKEN);
+let old_entry = {};
+client.login(process.env.BOT_TOKEN).then(() => {
+    // Initialize old blog entry
+    getNewestBlogEntry().then(entry => {
+        old_entry = entry;
+    }).catch(error => {
+        if(error){
+            console.log(error);
+        }
+    });
+});
 
 /*
  * Check every 5 hours for new blog posts
  */
 
-let old_entry = {};
 setInterval(() => {
     getNewestBlogEntry()
         .then(entry => {
