@@ -10,6 +10,7 @@ Clone this repository (either to your PC or a host). Create a file called `.env`
 
 ```
 BOT_TOKEN=<your token here>
+NEWS_CHANNEL_ID=<channel ID, where newest Mathworks blog will be posted>
 ```
 
 Start the bot:
