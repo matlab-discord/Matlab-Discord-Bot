@@ -1,6 +1,6 @@
 Available commands:
 ```
-!m <query>:  Search Mathworks documentations for <query>.
+!m <query>:  Search for <query> in Mathworks docs.
 
 !help: Display this help message.
 ```
