@@ -6,7 +6,13 @@ See [help.md](https://github.com/smcgit/Matlab-Discord-Bot/blob/master/msg/help.
 
 ## Installation
 
-Clone this repository (either to your PC or a host) and start the bot:
+Clone this repository (either to your PC or a host). Create a file called `.env` in the root directory, where the token of the bot has to be posted:
+
+```
+BOT_TOKEN=<your token here>
+```
+
+Start the bot:
 
 ```
 node index.js
