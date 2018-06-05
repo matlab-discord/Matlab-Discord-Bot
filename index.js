@@ -19,7 +19,7 @@ client.on('message', msg => {
                 if(result.product.toLowerCase() !== 'matlab'){
                     toolbox = ` from *${result.product}*`;
                 }
-                const msgResponse = `${result.title}${toolbox} ${result.url}`;
+                const msgResponse = `${result.title}${toolbox}:\`\`\`\n ${result.summary} \n\`\`\`<${result.url}>`;
                 msg.channel.send(msgResponse);
             })
             .catch((error) =>{
