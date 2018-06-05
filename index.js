@@ -2,7 +2,7 @@ require('dotenv').config();
 const fs = require('fs');
 const Discord = require('discord.js');
 const mustache = require('mustache');
-const searchDocs = require('./src/mathworks-docs');
+const {searchDocs, getNewestBlogEntry} = require('./src/mathworks-docs');
 
 /*
  * Function to read out all files in a folder.
@@ -53,6 +53,19 @@ const router = [{
             });
     }
 }, {
+    regexp: /^!blog/,
+    use: function (msg) {
+        getNewestBlogEntry()
+            .then(result => {
+                render(msg, 'blog.md', {result});
+            })
+            .catch(error => {
+                if (error) {
+                    render(msg, 'blog_error.md', {error})
+                }
+            });
+    }
+}, {
     regexp: /^!(roll|rand)(.*)$/,
     use: function (msg, tokens) {
         let number = parseInt(tokens[2]);
@@ -92,3 +105,27 @@ client.on('message', msg => {
 });
 
 client.login(process.env.BOT_TOKEN);
+
+/*
+ * Check every 5 hours for new blog posts
+ */
+
+let old_entry = {};
+setInterval(() => {
+    getNewestBlogEntry()
+        .then(entry => {
+            if (old_entry.title === undefined) {
+                old_entry = entry;
+                return;
+            }
+            if (old_entry.title !== entry.title) {
+                client.channels.get(process.env.NEWS_CHANNEL_ID).send(mustache.render(templates['blog.md'], {result: entry}));
+            }
+        })
+        .catch(error => {
+            if (error) {
+                console.log(error);
+            }
+        });
+
+}, 5 * 3600 * 1e3);

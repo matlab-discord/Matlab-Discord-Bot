@@ -1,0 +1,1 @@
+Error: Could not fetch newest blog entry.
