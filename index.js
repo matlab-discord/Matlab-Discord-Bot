@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const searchDocs = require('./src/mathworks-docs');
+require('dotenv').config();
 
 const fs = require('fs');
 
@@ -34,4 +35,4 @@ client.on('message', msg => {
     }
 });
 
-client.login('NDUzNDgzNzY1NjM4MTAzMDUy.DffjgQ.afSlYBn_ZVu31gQtDKI_FV1nm4Y');
+client.login(process.env.BOT_TOKEN);
