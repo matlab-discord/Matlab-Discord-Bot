@@ -1,0 +1,21 @@
+{
+  "name": "matlab-discord-bot",
+  "version": "1.0.0",
+  "description": "A bot for the Matlab server on Discord.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./test/main.js"
+  },
+  "keywords": [
+    "matlab",
+    "discord",
+    "bot"
+  ],
+  "author": "Jkl",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "discord.js": "^11.3.2",
+    "request": "^2.87.0"
+  }
+}
