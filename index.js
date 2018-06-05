@@ -53,7 +53,7 @@ const router = [{
             });
     }
 }, {
-    regexp: /^!(roll|rand)(.+)$/,
+    regexp: /^!(roll|rand)(.*)$/,
     use: function (msg, tokens) {
         let number = parseInt(tokens[2]);
         if (isNaN(number)) {
