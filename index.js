@@ -17,9 +17,10 @@ client.on('message', msg => {
             .then((result) => {
                 let toolbox = '';
                 if(result.product.toLowerCase() !== 'matlab'){
-                    toolbox = ` from *${result.product}*`;
+                    toolbox = ` from ${result.product}`;
                 }
-                const msgResponse = `${result.title}${toolbox}:\`\`\`\n ${result.summary} \n\`\`\`<${result.url}>`;
+                // const msgResponse = `${result.title}${toolbox}:\`\`\`\n${result.summary}\n\`\`\`<${result.url}>`;
+                const msgResponse = result.url;
                 msg.channel.send(msgResponse);
             })
             .catch((error) =>{
