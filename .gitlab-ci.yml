@@ -1,0 +1,3 @@
+git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/<name of your heroku app>.git
+
+git push -f -q heroku master
