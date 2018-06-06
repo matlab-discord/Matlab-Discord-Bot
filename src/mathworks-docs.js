@@ -24,6 +24,16 @@ async function getNewestBlogEntry() {
     };
 }
 
+async function getNewestVideo(){
+    const video = (await fetch('https://hooktube.com/api?mode=channel&id=UCgdHSFcXvkN6O3NXvif0-pA', 'json')).items[0];
+    return {
+        title: video.snippet.title,
+        description: video.snippet.description,
+        url: 'https://youtube.com/watch?v=' + video.id.videoId,
+        date: video.snippet.publishedAt
+    }
+}
+
 function parseDate(date){
     const currentYear = (new Date()).getFullYear().toString();
     if(!date.endsWith(currentYear)){
@@ -34,5 +44,6 @@ function parseDate(date){
 
 module.exports = {
     searchDocs,
-    getNewestBlogEntry
+    getNewestBlogEntry,
+    getNewestVideo
 };

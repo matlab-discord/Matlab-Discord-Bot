@@ -2,7 +2,7 @@ require('dotenv').config();
 const fs = require('fs');
 const Discord = require('discord.js');
 const mustache = require('mustache');
-const {searchDocs, getNewestBlogEntry} = require('./src/mathworks-docs');
+const {searchDocs, getNewestBlogEntry, getNewestVideo} = require('./src/mathworks-docs');
 
 /*
  * Function to read out all files in a folder.
@@ -66,6 +66,19 @@ const router = [{
             });
     }
 }, {
+    regexp: /^!youtube/,
+    use: function (msg) {
+        getNewestVideo()
+            .then(result => {
+                render(msg, 'youtube.md', {result});
+            })
+            .catch(error => {
+                if (error) {
+                    render(msg, 'youtube_error.md', {error})
+                }
+            });
+    }
+}, {
     regexp: /^!(roll|rand)(.*)$/,
     use: function (msg, tokens) {
         let number = parseInt(tokens[2]);
@@ -105,10 +118,19 @@ client.on('message', msg => {
 });
 
 let old_entry = {};
+let old_video = {};
 client.login(process.env.BOT_TOKEN).then(() => {
     // Initialize old blog entry
     getNewestBlogEntry().then(entry => {
         old_entry = entry;
+    }).catch(error => {
+        if(error){
+            console.log(error);
+        }
+    });
+    // Initialize old video
+    getNewestVideo().then(video => {
+        old_video = video;
     }).catch(error => {
         if(error){
             console.log(error);
@@ -138,3 +160,25 @@ setInterval(() => {
         });
 
 }, 5 * 3600 * 1e3);
+
+/*
+ * Check every 2 hours for new videos
+ */
+setInterval(() => {
+    getNewestVideo()
+        .then(video => {
+            if (old_video.title === undefined) {
+                old_video = video;
+                return;
+            }
+            if (old_video.title !== video.title) {
+                client.channels.get(process.env.NEWS_CHANNEL_ID).send(mustache.render(templates['youtube.md'], {result: video}));
+            }
+        })
+        .catch(error => {
+            if (error) {
+                console.log(error);
+            }
+        });
+
+}, 2 * 3600 * 1e3);

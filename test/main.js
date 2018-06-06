@@ -1,4 +1,4 @@
-const {searchDocs, getNewestBlogEntry} = require('../src/mathworks-docs');
+const {searchDocs, getNewestBlogEntry, getNewestVideo} = require('../src/mathworks-docs');
 
-getNewestBlogEntry().then(console.log);
+getNewestVideo().then(console.log);
 
