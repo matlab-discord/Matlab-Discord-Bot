@@ -1,3 +1,16 @@
-git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/matlabdiscordbot.git
+image: node:latest
 
-git push heroku master
+stages:
+  - production
+
+production:
+  type: deploy
+  stage: production
+  image: ruby:latest
+  script:
+    - apt-get update -qy
+    - apt-get install -y ruby-dev
+    - gem install dpl
+    - dpl --provider=heroku --app=node-heroku-dpl --api-key=$HEROKU_API_KEY
+  only:
+    - master
