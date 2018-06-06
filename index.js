@@ -109,12 +109,18 @@ client.on('ready', () => {
 
 client.on('message', msg => {
     let tokens;
+    let commandExecuted = false;
     for (const route of router) {
         if ((tokens = route.regexp.exec(msg.content)) !== null) {
             route.use(msg, tokens);
+            commandExecuted = true;
             break;
         }
     }
+    if((!commandExecuted) && msg.isMentioned(client.user)){
+        msg.reply('hello. let us program some matlab.');
+    }
+
     if(/(cumsum|cummin|cummax|cumtrapz|cumsec|cumprod)/.exec(msg.content) !== null){
         msg.react("💦");
     }
