@@ -79,6 +79,18 @@ const router = [{
             });
     }
 }, {
+    regexp: /cumtrapz/,
+    use: async function (msg) {
+        await msg.react("🇨");
+        await msg.react("🇺");
+        await msg.react("🇲");
+        await msg.react("🇹");
+        await msg.react("🇷");
+        await msg.react("🇦");
+        await msg.react("🇵");
+        await msg.react("🇿");
+    }
+}, {
     regexp: /^!(roll|rand)(.*)$/,
     use: function (msg, tokens) {
         let number = parseInt(tokens[2]);
@@ -124,7 +136,7 @@ client.login(process.env.BOT_TOKEN).then(() => {
     getNewestBlogEntry().then(entry => {
         old_entry = entry;
     }).catch(error => {
-        if(error){
+        if (error) {
             console.log(error);
         }
     });
@@ -132,7 +144,7 @@ client.login(process.env.BOT_TOKEN).then(() => {
     getNewestVideo().then(video => {
         old_video = video;
     }).catch(error => {
-        if(error){
+        if (error) {
             console.log(error);
         }
     });

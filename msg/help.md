@@ -10,5 +10,5 @@ Available commands:
 
 !youtube : Post the newest video from Mathworks Youtube channel. 
 
-!help: Display this help message.
+!help : Display this help message.
 ```
