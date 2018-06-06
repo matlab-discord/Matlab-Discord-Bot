@@ -38,7 +38,7 @@ const render = async function (msg, filename, view = {}) {
  * Router for all commands detected via regexp.
  */
 const router = [{
-    regexp: /^!(m|doc) (.+)$/, // E.g. if "!m interp1" or "!doc interp1"
+    regexp: /!(m|doc) (.+)( .*)?$/, // E.g. if "!m interp1" or "!doc interp1"
     use: function (msg, tokens) {
         const query = tokens[2].trim();
         searchDocs(query)
@@ -53,7 +53,7 @@ const router = [{
             });
     }
 }, {
-    regexp: /^!blog/,
+    regexp: /!blog/,
     use: function (msg) {
         getNewestBlogEntry()
             .then(result => {
@@ -66,7 +66,7 @@ const router = [{
             });
     }
 }, {
-    regexp: /^!youtube/,
+    regexp: /!youtube/,
     use: function (msg) {
         getNewestVideo()
             .then(result => {
@@ -79,19 +79,7 @@ const router = [{
             });
     }
 }, {
-    regexp: /cumtrapz/,
-    use: async function (msg) {
-        await msg.react("🇨");
-        await msg.react("🇺");
-        await msg.react("🇲");
-        await msg.react("🇹");
-        await msg.react("🇷");
-        await msg.react("🇦");
-        await msg.react("🇵");
-        await msg.react("🇿");
-    }
-}, {
-    regexp: /^!(roll|rand)(.*)$/,
+    regexp: /!(roll|rand)(.*)$/,
     use: function (msg, tokens) {
         let number = parseInt(tokens[2]);
         if (isNaN(number)) {
@@ -103,10 +91,10 @@ const router = [{
         });
     }
 }, {
-    regexp: /^!(.+?)( .*)?$/, // E.g. any other message (like help.md => "!help", "!help interp1", ...)
+    regexp: /!(.+?)( .*)?$/, // E.g. any other message (like help.md => "!help", "!help interp1", ...)
     use: function (msg, tokens) {
-        const query = tokens[1];
-        render(msg, query + '.md', {query});
+        const command = tokens[1];
+        render(msg, command + '.md', {query: command});
     }
 }];
 
@@ -126,6 +114,9 @@ client.on('message', msg => {
             route.use(msg, tokens);
             break;
         }
+    }
+    if(/(cumsum|cummin|cummax|cumtrapz|cumsec|cumprod)/.exec(msg.content) !== null){
+        msg.react("💦");
     }
 });
 
