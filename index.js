@@ -26,6 +26,25 @@ for (let key in templates) {
 }
 
 /*
+ * Jobs which are going to be executed every interval (in ms).
+ */
+const cronjobs = [
+    {
+        name: 'Blog',
+        use: getNewestBlogEntry,
+        interval: 5*3600*1e3,
+        template: 'blog.md',
+        errors: []
+    }, {
+        name: 'Youtube',
+        use: getNewestVideo,
+        interval: 2*3600*1e3,
+        template: 'youtube.md',
+        errors: []
+    }
+];
+
+/*
  * Function for responding with a rendered message, if the template with the given filename exists.
  */
 const render = async function (msg, filename, view = {}) {
@@ -79,6 +98,18 @@ const router = [{
             });
     }
 }, {
+    regexp: /!cronjob/,
+    use: function (msg) {
+        let result = [];
+        for(let cronjob of cronjobs){
+            let hours = Math.round((new Date() - cronjob.last_checked)/(3600*1e3)*100)/100;
+            let interval = Math.round(cronjob.interval/(3600*1e3)*100)/100;
+            result.push(`${cronjob.name} : Last checked: ${hours} hours ago, Interval: ${interval} hours, Errors: ${cronjob.errors.length}`);
+        }
+        result = result.join('\n\n');
+        render(msg, 'cronjobs.md', {result});
+    }
+}, {
     regexp: /!(roll|rand)(.*)$/,
     use: function (msg, tokens) {
         let number = parseInt(tokens[2]);
@@ -126,68 +157,50 @@ client.on('message', msg => {
     }
 });
 
-let old_entry = {};
-let old_video = {};
-client.login(process.env.BOT_TOKEN).then(() => {
-    // Initialize old blog entry
-    getNewestBlogEntry().then(entry => {
-        old_entry = entry;
-    }).catch(error => {
-        if (error) {
-            console.log(error);
-        }
-    });
-    // Initialize old video
-    getNewestVideo().then(video => {
-        old_video = video;
-    }).catch(error => {
-        if (error) {
-            console.log(error);
-        }
+client.on('channelPinsUpdate', (channel, time) => {
+    // Log the newest message (but it's also the newest message if you unpin!)
+    channel.fetchPinnedMessages().then(msgs => {
+        let iterator = msgs.entries();
+        let msg = iterator.next().value[1];
+        console.log(msg);
     });
 });
 
-/*
- * Check every 5 hours for new blog posts
- */
-
-setInterval(() => {
-    getNewestBlogEntry()
-        .then(entry => {
-            if (old_entry.title === undefined) {
-                old_entry = entry;
-                return;
-            }
-            if (old_entry.title !== entry.title) {
-                client.channels.get(process.env.NEWS_CHANNEL_ID).send(mustache.render(templates['blog.md'], {result: entry}));
-            }
-        })
-        .catch(error => {
-            if (error) {
-                console.log(error);
-            }
-        });
-
-}, 5 * 3600 * 1e3);
+client.login(process.env.BOT_TOKEN).then(initCronjobs);
 
 /*
- * Check every 2 hours for new videos
+ * Function to initialize cronjobs and start the interval.
  */
-setInterval(() => {
-    getNewestVideo()
-        .then(video => {
-            if (old_video.title === undefined) {
-                old_video = video;
-                return;
-            }
-            if (old_video.title !== video.title) {
-                client.channels.get(process.env.NEWS_CHANNEL_ID).send(mustache.render(templates['youtube.md'], {result: video}));
-            }
-        })
-        .catch(error => {
-            if (error) {
-                console.log(error);
-            }
-        });
-
-}, 2 * 3600 * 1e3);
+function initCronjobs() {
+    for(let cronjob of cronjobs){
+        cronjob.use()
+            .then(entry => {
+                cronjob.entry = entry;
+                cronjob.last_checked = new Date();
+                // Run cronjob
+                setInterval(() => {
+                    cronjob.use()
+                        .then(entry =>{
+                            cronjob.last_checked = new Date();
+                            if(entry.title === cronjob.entry.title){
+                                return;
+                            }
+                            cronjob.entry = entry;
+                            client.channels.get(process.env.NEWS_CHANNEL_ID).send(mustache.render(templates[cronjob.template], {result: entry}));
+                        })
+                        .catch(error => {
+                            if(error){
+                                cronjob.errors.push(error);
+                                console.log(error);
+                            }
+                        });
+                }, cronjob.interval);
+            })
+            .catch(error => {
+                if(error){
+                    cronjob.errors.push(error);
+                    console.log(error);
+                }
+            });
+    }
+}
