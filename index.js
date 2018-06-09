@@ -57,7 +57,7 @@ const render = async function (msg, filename, view = {}) {
  * Router for all commands detected via regexp.
  */
 const router = [{
-    regexp: /!(m|doc) (.+)( .*)?$/, // E.g. if "!m interp1" or "!doc interp1"
+    regexp: /!(m|doc) (.+?)(\s.*)?$/, // E.g. if "!m interp1" or "!doc interp1"
     use: function (msg, tokens) {
         const query = tokens[2].trim();
         searchDocs(query)
