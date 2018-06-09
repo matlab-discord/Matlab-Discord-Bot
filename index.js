@@ -32,13 +32,13 @@ const cronjobs = [
     {
         name: 'Blog',
         use: getNewestBlogEntry,
-        interval: 5*3600*1e3,
+        interval: 5 * 3600 * 1e3,
         template: 'blog.md',
         errors: []
     }, {
         name: 'Youtube',
         use: getNewestVideo,
-        interval: 2*3600*1e3,
+        interval: 2 * 3600 * 1e3,
         template: 'youtube.md',
         errors: []
     }
@@ -63,11 +63,11 @@ const router = [{
         searchDocs(query)
             .then((result) => {
                 result.toolbox = (result.product.toLowerCase() !== 'matlab') ? ` from ${result.product}` : '';
-                render(msg, 'm.md', {result, query});
+                render(msg, 'doc.md', {result, query});
             })
             .catch((error) => {
                 if (error) {
-                    render(msg, 'm_error.md', {error, query});
+                    render(msg, 'doc_error.md', {error, query});
                 }
             });
     }
@@ -101,9 +101,9 @@ const router = [{
     regexp: /!cronjob/,
     use: function (msg) {
         let result = [];
-        for(let cronjob of cronjobs){
-            let hours = Math.round((new Date() - cronjob.last_checked)/(3600*1e3)*100)/100;
-            let interval = Math.round(cronjob.interval/(3600*1e3)*100)/100;
+        for (let cronjob of cronjobs) {
+            let hours = Math.round((new Date() - cronjob.last_checked) / (3600 * 1e3) * 100) / 100;
+            let interval = Math.round(cronjob.interval / (3600 * 1e3) * 100) / 100;
             result.push(`${cronjob.name} : Last checked: ${hours} hours ago, Interval: ${interval} hours, Errors: ${cronjob.errors.length}`);
         }
         result = result.join('\n\n');
@@ -148,14 +148,14 @@ client.on('message', msg => {
             break;
         }
     }
-    if((!commandExecuted) && msg.isMentioned(client.user)){
+    if ((!commandExecuted) && msg.isMentioned(client.user)) {
         msg.reply('hello. let us program some matlab.');
     }
 
-    if(/(cumsum|cummin|cummax|cumtrapz|cumsec|cumprod)/.exec(msg.content) !== null){
+    if (/(cumsum|cummin|cummax|cumtrapz|cumsec|cumprod)/.exec(msg.content) !== null) {
         msg.react("💦");
     }
-    if(/[A-Za-z][\w]+\(\s*(0|-\s*\d+)\s*\)/.exec(msg.content) !== null){
+    if (/[A-Za-z][\w]+\(\s*(0|-\s*\d+)\s*\)/.exec(msg.content) !== null) {
         render(msg, 'badsubscript.md');
     }
 });
@@ -175,7 +175,7 @@ client.login(process.env.BOT_TOKEN).then(initCronjobs);
  * Function to initialize cronjobs and start the interval.
  */
 function initCronjobs() {
-    for(let cronjob of cronjobs){
+    for (let cronjob of cronjobs) {
         cronjob.use()
             .then(entry => {
                 cronjob.entry = entry;
@@ -183,16 +183,16 @@ function initCronjobs() {
                 // Run cronjob
                 setInterval(() => {
                     cronjob.use()
-                        .then(entry =>{
+                        .then(entry => {
                             cronjob.last_checked = new Date();
-                            if(entry.title === cronjob.entry.title){
+                            if (entry.title === cronjob.entry.title) {
                                 return;
                             }
                             cronjob.entry = entry;
                             client.channels.get(process.env.NEWS_CHANNEL_ID).send(mustache.render(templates[cronjob.template], {result: entry}));
                         })
                         .catch(error => {
-                            if(error){
+                            if (error) {
                                 cronjob.errors.push(error);
                                 console.log(error);
                             }
@@ -200,7 +200,7 @@ function initCronjobs() {
                 }, cronjob.interval);
             })
             .catch(error => {
-                if(error){
+                if (error) {
                     cronjob.errors.push(error);
                     console.log(error);
                 }
