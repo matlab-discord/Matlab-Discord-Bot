@@ -155,6 +155,9 @@ client.on('message', msg => {
     if(/(cumsum|cummin|cummax|cumtrapz|cumsec|cumprod)/.exec(msg.content) !== null){
         msg.react("💦");
     }
+    if(/[^\s]\((0|-\d+)\)/.exec(msg.content) !== null){
+        render(msg, 'badsubscript.md');
+    }
 });
 
 client.on('channelPinsUpdate', (channel, time) => {
