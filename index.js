@@ -155,7 +155,7 @@ client.on('message', msg => {
     if (/(cumsum|cummin|cummax|cumtrapz|cumsec|cumprod)/.exec(msg.content) !== null) {
         msg.react("💦");
     }
-    if (/[A-Za-z][\w]+\(\s*(0|-\s*\d+)\s*\)/.exec(msg.content) !== null) {
+    if (/[A-Za-z][\w]*\(\s*(0|-\s*\d+)\s*\)/.exec(msg.content) !== null) {
         render(msg, 'badsubscript.md');
     }
 });
