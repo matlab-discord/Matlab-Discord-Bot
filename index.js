@@ -116,10 +116,23 @@ const router = [{
         if (isNaN(number)) {
             number = 6;
         }
-        render(msg, 'rand.md', {
-            rolled: Math.round((number - 1) * Math.random() + 1),
-            number: number
-        });
+        let rolled;
+        if(number > 0){
+            rolled = Math.round((number - 1) * Math.random() + 1);
+        }
+        else if (number === 0) {
+            rolled = 'Inf';
+        }
+        else{
+            const rollWeird = (n) => Math.round((2*n*Math.random() - n)*1000)/1000;
+            let imag = rollWeird(number);
+            if(imag >= 0){
+                imag = '+' + imag;
+            }
+            rolled = `${rollWeird(number)}${imag}i`;
+        }
+
+        render(msg, 'rand.md', { rolled, number });
     }
 }, {
     regexp: /!why/,
