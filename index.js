@@ -2,7 +2,7 @@ require('dotenv').config();
 const fs = require('fs');
 const Discord = require('discord.js');
 const mustache = require('mustache');
-const {searchDocs, getNewestBlogEntry, getNewestVideo} = require('./src/mathworks-docs');
+const {searchDocs, getNewestBlogEntry, getNewestVideo, why} = require('./src/mathworks-docs');
 
 /*
  * Function to read out all files in a folder.
@@ -119,6 +119,13 @@ const router = [{
         render(msg, 'rand.md', {
             rolled: Math.round((number - 1) * Math.random() + 1),
             number: number
+        });
+    }
+}, {
+    regexp: /!why/,
+    use: function (msg) {
+        render(msg, 'why.md', {
+            result: why(),
         });
     }
 }, {
