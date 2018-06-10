@@ -149,7 +149,15 @@ client.on('message', msg => {
         }
     }
     if ((!commandExecuted) && msg.isMentioned(client.user)) {
-        msg.reply('hello. let us program some matlab.');
+        if(/(thank|thx)/.exec(msg.content)){
+            msg.reply(mustache.render(templates['thanks.md']));
+        }
+        if(/(hi|hello|good|sup|what's up)/.exec(msg.content)){
+            msg.reply(mustache.render(templates['greeting.md']));
+        }
+        else{
+            msg.reply(mustache.render(templates['reply.md']));
+        }
     }
 
     if (/(cumsum|cummin|cummax|cumtrapz|cumsec|cumprod)/.exec(msg.content) !== null) {
