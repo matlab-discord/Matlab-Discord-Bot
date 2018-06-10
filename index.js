@@ -152,7 +152,7 @@ client.on('message', msg => {
         if(/(thank|thx)/.exec(msg.content)){
             msg.reply(mustache.render(templates['thanks.md']));
         }
-        if(/(hi|hello|good|sup|what's up)/.exec(msg.content)){
+        else if(/(hi|hello|good|sup|what's up)/.exec(msg.content)){
             msg.reply(mustache.render(templates['greeting.md']));
         }
         else{
