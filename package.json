@@ -1,6 +1,6 @@
 {
   "name": "matlab-discord-bot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A bot for the Matlab server on Discord.",
   "main": "index.js",
   "scripts": {

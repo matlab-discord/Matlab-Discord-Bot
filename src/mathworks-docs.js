@@ -14,7 +14,7 @@ async function searchDocs(query) {
 
 async function getNewestBlogEntry() {
     const d = await fetch('https://blogs.mathworks.com/');
-    let [, , date] = /^(.+?) on (.+)$/.exec(d('.blogger-name').eq(0).text().trim());
+    let [, , date] = /^(.*?)on (.+)$/.exec(d('.blogger-name').eq(0).text().trim());
     const a = d('.post-title > a').eq(0);
     return {
         title: a.text().trim(),
