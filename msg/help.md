@@ -4,7 +4,7 @@ code : Reminder on how to paste code into Discord chat.
 
 doc <query> : Search for <query> in the Mathworks docs (or use "m"). 
 
-rand [n = 6] : Return a random number between 1 and n (or use "roll").
+rand <n>: Return a random number between 1 and <n>, which is by default 6 (or use "roll").
 ```
 Additional commands:
 ```
