@@ -2,7 +2,8 @@ require('dotenv').config();
 const fs = require('fs');
 const Discord = require('discord.js');
 const mustache = require('mustache');
-const {searchDocs, getNewestBlogEntry, getNewestVideo, why} = require('./src/mathworks-docs');
+const {searchDocs, getNewestBlogEntry, getNewestVideo} = require('./src/mathworks-docs');
+const why = require('./src/why');
 
 /*
  * Function to read out all files in a folder.
