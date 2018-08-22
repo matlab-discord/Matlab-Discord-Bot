@@ -185,7 +185,7 @@ function why() {
 
     function noun() {
         let a;
-        switch (randi(16)) {
+        switch (randi(6)) {
             case 1:
                 a = 'mathematician';
                 break;
