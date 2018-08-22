@@ -4,6 +4,7 @@ const Discord = require('discord.js');
 const mustache = require('mustache');
 const {searchDocs, getNewestBlogEntry, getNewestVideo} = require('./src/mathworks-docs');
 const why = require('./src/why');
+const roll = require('./src/roll');
 
 /*
  * Function to read out all files in a folder.
@@ -113,26 +114,7 @@ const router = [{
 }, {
     regexp: /!(roll|rand)(.*)$/,
     use: function (msg, tokens) {
-        let number = parseInt(tokens[2]);
-        if (isNaN(number)) {
-            number = 6;
-        }
-        let rolled;
-        if(number > 0){
-            rolled = Math.round((number - 1) * Math.random() + 1);
-        }
-        else if (number === 0) {
-            rolled = 'Inf';
-        }
-        else{
-            const rollWeird = (n) => Math.round((2*n*Math.random() - n)*1000)/1000;
-            let imag = rollWeird(number);
-            if(imag >= 0){
-                imag = '+' + imag;
-            }
-            rolled = `${rollWeird(number)}${imag}i`;
-        }
-
+        let number = roll(tokens[2]);
         render(msg, 'rand.md', { rolled, number });
     }
 }, {
