@@ -21,7 +21,7 @@ const roll = function (text = '6') {
         rolled = `${rollWeird(number)}${imag}i`;
     }
 
-    return rolled;
+    return {number, rolled};
 
     /*
     // Convert to string

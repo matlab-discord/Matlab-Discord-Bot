@@ -114,7 +114,7 @@ const router = [{
 }, {
     regexp: /!(roll|rand)(.*)$/,
     use: function (msg, tokens) {
-        let number = roll(tokens[2]);
+        let {rolled, number} = roll(tokens[2]);
         render(msg, 'rand.md', { rolled, number });
     }
 }, {
