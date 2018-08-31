@@ -190,6 +190,12 @@ client.on('message', msg => {
     }
 });
 
+if(['true', '1'].includes(process.env.DM_INTRO.toLowerCase())){
+    client.on('guildMemberAdd', member => {
+        member.send(mustache.render(templates['intro.md'], {}));
+    });
+}
+
 /*
 client.on('channelPinsUpdate', (channel, time) => {
     // Log the newest message (but it's also the newest message if you unpin!)
