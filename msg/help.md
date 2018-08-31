@@ -18,6 +18,8 @@ help : Display this help message.
 
 matlab : Matlab description.
 
+twitter : Post the newest tweet by @MATLAB on Twitter.
+
 youtube : Post the newest video from Mathworks Youtube channel.
 
 why : Answer to all questions.
