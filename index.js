@@ -2,7 +2,7 @@ require('dotenv').config();
 const fs = require('fs');
 const Discord = require('discord.js');
 const mustache = require('mustache');
-const {searchDocs, getNewestBlogEntry, getNewestVideo} = require('./src/mathworks-docs');
+const {searchDocs, getNewestBlogEntry, getNewestTweet, getNewestVideo} = require('./src/mathworks-docs');
 const why = require('./src/why');
 const roll = require('./src/roll');
 
@@ -36,6 +36,12 @@ const cronjobs = [
         use: getNewestBlogEntry,
         interval: 5 * 3600 * 1e3,
         template: 'blog.md',
+        errors: []
+    }, {
+        name: 'Twitter',
+        use: getNewestTweet,
+        interval: 2 * 3600 * 1e3,
+        template: 'twitter.md',
         errors: []
     }, {
         name: 'Youtube',
@@ -96,6 +102,19 @@ const router = [{
             .catch(error => {
                 if (error) {
                     render(msg, 'youtube_error.md', {error})
+                }
+            });
+    }
+},{
+    regexp: /!twitter/,
+    use: function (msg) {
+        getNewestTweet()
+            .then(result => {
+                render(msg, 'twitter.md', {result});
+            })
+            .catch(error => {
+                if (error) {
+                    render(msg, 'twitter_error.md', {error})
                 }
             });
     }
@@ -171,6 +190,7 @@ client.on('message', msg => {
     }
 });
 
+/*
 client.on('channelPinsUpdate', (channel, time) => {
     // Log the newest message (but it's also the newest message if you unpin!)
     channel.fetchPinnedMessages().then(msgs => {
@@ -179,6 +199,7 @@ client.on('channelPinsUpdate', (channel, time) => {
         console.log(msg);
     });
 });
+*/
 
 client.login(process.env.BOT_TOKEN).then(initCronjobs);
 

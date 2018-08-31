@@ -24,6 +24,15 @@ async function getNewestBlogEntry() {
     };
 }
 
+async function getNewestTweet() {
+    const d = await fetch('https://twitter.com/MATLAB');
+    let id = d('.js-stream-item.stream-item.stream-item').eq(0).attr('data-item-id');
+    return {
+        title: id,
+        url: 'https://twitter.com/MATLAB/status/' + id
+    };
+}
+
 async function getNewestVideo() {
     const video = (await fetch('https://hooktube.com/api?mode=channel&id=UCgdHSFcXvkN6O3NXvif0-pA', 'json')).items[0];
     return {
@@ -45,5 +54,6 @@ function parseDate(date) {
 module.exports = {
     searchDocs,
     getNewestBlogEntry,
+    getNewestTweet,
     getNewestVideo
 };

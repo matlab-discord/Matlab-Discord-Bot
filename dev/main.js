@@ -1,7 +1,13 @@
+const fetch = require('../src/fetch');
+fetch('https://twitter.com/MATLAB').then(function(doc){
+    let firstTweet = doc('.js-stream-item.stream-item.stream-item').eq(0);
+    console.log('https://twitter.com/MATLAB/status/' + firstTweet.attr('data-item-id'));
+});
 
+/*
 const {searchDocs, getNewestBlogEntry, getNewestVideo} = require('../src/mathworks-docs');
 getNewestBlogEntry().then(console.log);
-
+*/
 
 /*
 const why = require('../src/why');
