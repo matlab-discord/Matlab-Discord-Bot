@@ -39,6 +39,7 @@ async function getNewestTweet() {
      */
     if (username !== '@MATLAB') {
         if (firstCall) {
+            firstCall = false;
             return firstTweetIfFail;
         }
         return undefined;
