@@ -24,9 +24,26 @@ async function getNewestBlogEntry() {
     };
 }
 
+const firstTweetIfFail = {title: '1037657952172363778', url: 'https://twitter.com/MATLAB/status/1037657952172363778'};
+let firstCall = true;
+
 async function getNewestTweet() {
     const d = await fetch('https://twitter.com/MATLAB');
-    let id = d('.js-stream-item.stream-item.stream-item').eq(0).attr('data-item-id');
+    let firstTweet = d('.js-stream-item.stream-item.stream-item').eq(0);
+    let id = firstTweet.attr('data-item-id');
+    let username = firstTweet.find('.username.u-dir.u-textTruncate').eq(0).text().trim();
+
+    /*
+     * If tweet is not by @Matlab, return undefined which will raise an error (not the best way to do this).
+     * The first call of this function will return a made up tweet if failed. So the cronjob does not crash.
+     */
+    if (username !== '@MATLAB') {
+        if (firstCall) {
+            return firstTweetIfFail;
+        }
+        return undefined;
+    }
+    firstCall = false;
     return {
         title: id,
         url: 'https://twitter.com/MATLAB/status/' + id
