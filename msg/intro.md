@@ -10,11 +10,11 @@ __**Help**__
 
 Most questions can be answered by googling "matlab + your question".
 
-If you still need help, ask your question in #help-1, #help-2 or #help-3.
+If you still need help, ask your question in <#450928036800364546>, <#456342124342804481> or <#456342247189774338>.
 
 __**Bot Commands**__
 
-Use bot commands in #botspam. Write `!help` in chat to get a list of all commands.
+Use bot commands in <#453522391377903636>. Write `!help` in chat to get a list of all commands.
 
 __**Posting Code in Chat**__
 
