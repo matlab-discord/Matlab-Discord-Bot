@@ -14,8 +14,10 @@ const fetch = (url, type = 'html') => {
                 catch(error){
                     reject(error);
                 }
-            } else {
+            } else if(type === 'html') {
                 resolve(cheerio.load(html));
+            } else{
+                resolve(html);
             }
         });
     });

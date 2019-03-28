@@ -7,10 +7,10 @@ fetch('https://twitter.com/MATLAB').then(function(doc){
 });
 */
 
-
+/*
 const {searchDocs, getNewestBlogEntry, getNewestVideo, getNewestTweet} = require('../src/mathworks-docs');
 getNewestTweet().then(console.log);
-
+*/
 
 /*
 const why = require('../src/why');
@@ -23,3 +23,6 @@ for(let i = 0; i < 50; i++){
 const roll = require('../src/roll');
 console.log(roll('fuck-1.4e+5f'));
 */
+
+const latex2png = require('../src/latex');
+latex2png('\\alpha').then(console.log);

@@ -5,6 +5,7 @@ const mustache = require('mustache');
 const {searchDocs, getNewestBlogEntry, getNewestTweet, getNewestVideo} = require('./src/mathworks-docs');
 const why = require('./src/why');
 const roll = require('./src/roll');
+const latex = require('./src/latex');
 
 /*
  * Function to read out all files in a folder.
@@ -78,6 +79,20 @@ const router = [{
                     render(msg, 'doc_error.md', {error, query});
                 }
             });
+    }
+}, {
+    regexp: /[!$]`(.+)`\$?/, // E.g. if "!m interp1" or "!doc interp1"
+    use: function (msg, tokens) {
+        const query = tokens[1].trim();
+        latex(query).then((imgUrl) =>{
+                msg.channel.send('', {
+                    file:imgUrl
+                });
+        }).catch((error) => {
+            if (error) {
+                msg.channel.send('Could not parse latex.');
+            }
+        });
     }
 }, {
     regexp: /!blog/,
