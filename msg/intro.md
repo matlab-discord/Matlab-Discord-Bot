@@ -3,6 +3,9 @@
 If you are new to Matlab, check out the official Matlab tutorials:
 <https://www.mathworks.com/support/learn-with-matlab-tutorials.html>
 
+Or this unofficial Matlab tutorial:
+<https://www.tutorialspoint.com/matlab/index.htm>
+
 Improve your coding skills by solving code challenges:
 <https://www.mathworks.com/matlabcentral/cody/?s_tid=gn_mlc_cody>
 
@@ -11,6 +14,8 @@ __**Help**__
 Most questions can be answered by googling "matlab + your question".
 
 If you still need help, ask your question in <#450928036800364546>, <#456342124342804481> or <#456342247189774338>.
+
+*Do not ping* other users for help. People who want to help will read the chat.
 
 __**Bot Commands**__
 
