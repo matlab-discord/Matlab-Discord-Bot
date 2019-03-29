@@ -54,11 +54,25 @@ const cronjobs = [
 ];
 
 /*
+ * Object which is a map of command message id -> sent message id
+ */
+let botMessages = [];
+const addBotMessage = function (msgID, channelID, sentID) {
+    botMessages.push({msgID, sentID, channelID});
+    if (botMessages.length > lengthMaxBotMessages) {
+        botMessages = botMessages.slice(1);
+    }
+};
+const lengthMaxBotMessages = 1000;
+/*
  * Function for responding with a rendered message, if the template with the given filename exists.
  */
 const render = async function (msg, filename, view = {}) {
     if (templates[filename] !== undefined) {
-        msg.channel.send(mustache.render(templates[filename], view));
+        const sent = await msg.channel.send(mustache.render(templates[filename], view)).catch(console.log);
+        if (sent !== undefined) {
+            addBotMessage(msg.id, msg.channel.id, sent.id);
+        }
     }
 };
 
@@ -84,10 +98,12 @@ const router = [{
     regexp: /[!$]`(.+)`\$?/, // E.g. if "!m interp1" or "!doc interp1"
     use: function (msg, tokens) {
         const query = tokens[1].trim();
-        latex(query).then((imgUrl) =>{
-                msg.channel.send('', {
-                    file:imgUrl
-                });
+        latex(query).then((imgUrl) => {
+            msg.channel.send('', {
+                file: imgUrl
+            }).then((sent) => {
+                addBotMessage(msg.id, msg.channel.id, sent.id);
+            }).catch(console.error);
         }).catch((error) => {
             if (error) {
                 msg.channel.send('Could not parse latex.');
@@ -120,7 +136,7 @@ const router = [{
                 }
             });
     }
-},{
+}, {
     regexp: /!twitter/,
     use: function (msg) {
         getNewestTweet()
@@ -149,7 +165,7 @@ const router = [{
     regexp: /!(roll|rand)(.*)$/,
     use: function (msg, tokens) {
         let {rolled, number} = roll(tokens[2]);
-        render(msg, 'rand.md', { rolled, number });
+        render(msg, 'rand.md', {rolled, number});
     }
 }, {
     regexp: /!why/,
@@ -176,6 +192,10 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
+    if (msg.author.bot) {
+        return;
+    }
+
     let tokens;
     let commandExecuted = false;
     for (const route of router) {
@@ -186,13 +206,13 @@ client.on('message', msg => {
         }
     }
     if ((!commandExecuted) && msg.isMentioned(client.user)) {
-        if(/(thank|thx)/.exec(msg.content)){
+        if (/(thank|thx)/.exec(msg.content)) {
             msg.reply(mustache.render(templates['thanks.md']));
         }
-        else if(/(hi|hello|good|sup|what's up)/.exec(msg.content)){
+        else if (/(hi|hello|good|sup|what's up)/.exec(msg.content)) {
             msg.reply(mustache.render(templates['greeting.md']));
         }
-        else{
+        else {
             msg.reply(mustache.render(templates['reply.md']));
         }
     }
@@ -205,7 +225,20 @@ client.on('message', msg => {
     }
 });
 
-if(['true', '1'].includes(process.env.DM_INTRO.toLowerCase())){
+client.on('messageDelete', async (msg) => {
+    const botMessage = botMessages.find(botMessage => botMessage.msgID === msg.id);
+    if (botMessage !== undefined) {
+        const sent = await client.channels
+            .get(botMessage.channelID)
+            .fetchMessage(botMessage.sentID)
+            .catch(console.log);
+        if (sent !== undefined) {
+            sent.delete().catch(console.log);
+        }
+    }
+});
+
+if (['true', '1'].includes(process.env.DM_INTRO.toLowerCase())) {
     client.on('guildMemberAdd', member => {
         member.send(mustache.render(templates['intro.md'], {}));
     });
