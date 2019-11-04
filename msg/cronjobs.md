@@ -1,4 +1,4 @@
-Cronjobs looking for Mathworks updates:
+Cronjobs looking for MathWorks updates:
 ```
 {{{result}}}
 ```
