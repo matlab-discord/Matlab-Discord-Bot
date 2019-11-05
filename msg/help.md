@@ -2,7 +2,7 @@ Commands:
 ```
 !code : Reminder on how to paste code into Discord chat.
 
-!doc <query> : Search for <query> in the Mathworks docs (or use "m"). 
+!doc <query> : Search for <query> in the MathWorks docs (or use "m"). 
 
 !rand <n> : Return a random number between 1 and <n>, which is 6 by default (or use "roll").
 
@@ -12,7 +12,7 @@ Additional commands:
 ```
 !about : About me.
 
-!blog : Post the newest picked blog entry from Mathworks.
+!blog : Post the newest picked blog entry from MathWorks.
 
 !cronjob : Displays the last times news has been checked.
 
@@ -24,7 +24,7 @@ Additional commands:
 
 !twitter : Post the newest tweet by @MATLAB on Twitter.
 
-!youtube : Post the newest video from Mathworks Youtube channel.
+!youtube : Post the newest video from MathWorks Youtube channel.
 
 !why : Answer to all questions.
 ```

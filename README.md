@@ -1,6 +1,6 @@
 # Matlab-Discord-Bot
 
-A bot for searching commands from Mathworks docs within Discord.
+A bot for searching commands from MathWorks docs within Discord.
 
 See [help.md](https://github.com/smcgit/Matlab-Discord-Bot/blob/master/msg/help.md) for all commands or type `!help` in chat.
 
@@ -10,7 +10,7 @@ Clone this repository (either to your PC or a host). Create a file called `.env`
 
 ```
 BOT_TOKEN=<your token here>
-NEWS_CHANNEL_ID=<channel ID for newest Mathworks blog posts and videos>
+NEWS_CHANNEL_ID=<channel ID for newest MathWorks blog posts and videos>
 DM_INTRO=<Send intro message to new users? If yes, set TRUE or 1.>
 ```
 
