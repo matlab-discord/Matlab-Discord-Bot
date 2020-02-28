@@ -57,6 +57,12 @@ typings/
 # dotenv environment variables file
 .env
 
+# realtime octave outputs
+realtime_octave/bot_out.txt
+realtime_octave/user_printout.png
+realtime_octave/user_code.m
+realtime_octave/workspaces
+
 # next.js build output
 .next
 
