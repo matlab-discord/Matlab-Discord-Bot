@@ -21,6 +21,10 @@ const rt_octave_user_code   = util.format('%s/user_code.m', rt_octave_folder);
 const rt_octave_printout    = util.format('%s/user_printout.png', rt_octave_folder);
 const rt_octave_timeout     = 5000; // time in ms
 
+// Load in illegal use functions for realtime octave and compile them as a regexp
+var illegal_read = fs.readFileSync(util.format('%s/illegal_phrases', rt_octave_folder), 'utf8');
+const illegal_use_regexp = new RegExp('(' + illegal_read.replace(/\n/g, ')|(') + ')');
+
 /*
  * Function to read out all files in a folder.
  */
@@ -101,14 +105,11 @@ const router = [{
     regexp: /!oct\s*(?:```matlab)?((?:[\s\S.])*[^`])(?:```)?$/,
     use: function (msg, tokens) {
 
-        // Illegal use functions
-        var illegal_use = /(dos)|(print)|(dbcont)|(ls)|(system)|(str2func)|(eval)|(feval)|(cd)|(rmdir)|(delete)|(unix)|(keyboard)|(dbstop)|(input)|(open)|(perl)|(python)|(popen\d?)|(pclose)|(fclose)|(fopen)|(waitpid)|(fork)|(exec)|(EXEC_PATH)|(pipe)|(dup2)|(fcntl)|(kill)|(dir)|(ls_command)|(pwd)|(setenv)|(putenv)|(unsetenv)|(get_home_directory)|(getenv)|(movefile)|(rename)|(copyfile)|(unlink)|(link)|(symlink)|(readlink)|(mkdir)|(confirm_recursive_rmdir)|(mkfifo)|(unmask)|(\w?stat)|(fileattrib)|(isdir)|(readdir)|(file_in_path)|(\w*zip\d?)|(\w*tar)|(unpack)|(uname)/g;
-
         // Grab the users commands
         var code = tokens[1];
         
         // Check for illegal command usage and warn against it...
-        var found_illegal_match = code.match(illegal_use);
+        var found_illegal_match = code.match(illegal_use_regexp);
         if(found_illegal_match) {
             msg.channel.send("Someone was being naughty <@" + process.env.OWNER_ID + ">");
             return;
