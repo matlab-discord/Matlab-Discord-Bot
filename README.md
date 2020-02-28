@@ -12,6 +12,7 @@ Clone this repository (either to your PC or a host). Create a file called `.env`
 BOT_TOKEN=<your token here>
 NEWS_CHANNEL_ID=<channel ID for newest MathWorks blog posts and videos>
 DM_INTRO=<Send intro message to new users? If yes, set TRUE or 1.>
+OWNER_ID=<Discord ID for the owner of the bot, for debugging purposes> 
 ```
 
 Start the bot:
