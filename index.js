@@ -342,18 +342,28 @@ const router = [{
         }
     }
 }, {
-    regexp: /^!(.+?)( .*)?$/, // E.g. any other message (like help.md => "!help", "!help interp1", ...)
+    regexp: /^!(.+?)( .*)?$/, // E.g. any other message, pass-through (like help.md => "!help", "!help interp1", ...)
     use: function (msg, tokens) {
         const command = tokens[1];
-	if(command == 'code') {
-		var	opts = {files: ['./img/backtick_highlight.png']};
-	}
-	else {
-		var	opts = {};
-	}
-	// Discord messages can have optional arguments, such as files
-	//var opts = {files: [file]};
-        render(msg, command + '.md', {query: command}, opts, true);
+    
+        // For an extra layer of configurability, some pass-through messages can have options (dont delete message, add file)
+        var opts = {};
+        var delete_msg = true;
+        switch(command)  {
+            case 'code':
+                // Send keyboard image with code command
+                opts = {files: ['./img/backtick_highlight.png']};
+                break;
+                
+            case 'jobs':
+                // Preferablly keep the message on to see who is looking at jobs
+                delete_msg = false;
+            default:
+                // do nothing
+        } // end switch
+
+        // Render the message with arguments
+        render(msg, command + '.md', {query: command}, opts, delete_msg);
     }
 }];
 
