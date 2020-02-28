@@ -102,6 +102,7 @@ const render = async function (msg, filename, view = {}, opts = {}, deleteMsg = 
  * Router for all commands detected via regexp.
  */
 const router = [{
+    // Realtime octave
     regexp: /!oct\s*(?:```matlab)?((?:[\s\S.])*[^`])(?:```)?$/,
     use: function (msg, tokens) {
 
@@ -114,7 +115,6 @@ const router = [{
             msg.channel.send("Someone was being naughty <@" + process.env.OWNER_ID + ">");
             return;
         }
-
 
         // Write the users code command to a file. continue execution if it works
         fs.writeFile(rt_octave_user_code, code, function(err) {
@@ -171,7 +171,6 @@ const router = [{
         var user_id = util.format('%s#%d', msg.author.username, msg.author.discriminator);
         var user_work_file  = util.format('%s/%s.mat', rt_octave_workspaces, user_id);
 
-        console.log(user_work_file);
         var cmd_format = util.format(`addpath('%s'); print_user_gcf('%s', '%s')`, rt_octave_folder, user_work_file, rt_octave_printout);
         var octave_call = util.format('octave --no-gui --eval "%s"', cmd_format);
 
