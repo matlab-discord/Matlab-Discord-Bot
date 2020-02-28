@@ -1,3 +1,10 @@
+Realtime Octave:
+```
+!oct : Type `!rthelp` to learn more
+
+!opr : Print graphic figure to channel.
+```
+
 Commands:
 ```
 !code : Reminder on how to paste code into Discord chat.
@@ -9,9 +16,7 @@ Commands:
 !`<latex_code>` : Posts an image of the compiled latex code (or use $`<latex_code>`).
 
 !done : Clear a help channel of its busy status. (exit, answered, close also work)
-```
-Additional commands:
-```
+
 !about : About me.
 
 !blog : Post the newest picked blog entry from Mathworks.
