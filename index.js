@@ -108,6 +108,12 @@ const router = [{
 
         // Grab the users commands
         var code = tokens[1];
+
+        // Don't allow the use of this function in DM's
+        if((msg.guild === null) && (msg.author.id != process.env.OWNER_ID)) {
+            msg.channel.send("Use of realtime octave is not allowed in DM's.  Please visit the main channel.");
+            return;
+        }
         
         // Check for illegal command usage and warn against it...
         var found_illegal_match = code.match(illegal_use_regexp);
@@ -167,6 +173,12 @@ const router = [{
     regexp: /!opr$/,
     use: function (msg, tokens) {
 
+        // Don't allow the use of this function in DM's
+        if((msg.guild === null) && (msg.author.id != process.env.OWNER_ID)) {
+            msg.channel.send("Use of realtime octave is not allowed in DM's.  Please visit the main channel.");
+            return;
+        }
+        
         // Figure out the workspace filename for this user
         var user_id = util.format('%s#%d', msg.author.username, msg.author.discriminator);
         var user_work_file  = util.format('%s/%s.mat', rt_octave_workspaces, user_id);
