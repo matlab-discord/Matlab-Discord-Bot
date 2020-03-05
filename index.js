@@ -115,7 +115,7 @@ const render = async function (msg, filename, view = {}, opts = {}, deleteMsg = 
  */
 const router = [{
     // Realtime octave
-    regexp: /^!o(\w+)/,
+    regexp: /^!((?:oct)|(?:opr)|(?:oup))/,
     use: function (msg, tokens) {
 
         // Don't allow the use of this function in DM's
@@ -130,7 +130,7 @@ const router = [{
         var user_work_file  = util.format('%s/%s.mat', rt_octave_workspaces, user_id);
                     
         // Grab the realtime octave operation that the user called
-        var operation = "o"+tokens[1];
+        var operation = tokens[1];
 
         // Control switch for different real time octave operations
         switch(operation) {
