@@ -168,7 +168,7 @@ const router = [{
                     var octave_call = util.format('octave --no-gui --eval "%s"', cmd_format);
 
                     // Call async system octave call with a timeout.  error if it exceeds
-                    exec(octave_call, {timeout: rt_octave_timeout}, function(err, stdout, stderr) {
+                    exec(octave_call, {timeout: 10000}, function(err, stdout, stderr) {
                         if(err) { // if there was an error
                             console.log(err); // log the error
                             msg.channel.send("Your command timed out.");
@@ -437,6 +437,8 @@ const router = [{
                 break;
                 
             case 'jobs':
+            case 'help':
+            case 'rthelp':
                 // Preferablly keep the message on to see who is looking at jobs
                 delete_msg = false;
             default:
@@ -530,6 +532,7 @@ client.on('message', msg => {
 
 });
 
+// on message delete events, remove the corresponding bot message tighted to the action if there is one
 client.on('messageDelete', async (msg) => {
     const botMessage = botMessages.find(botMessage => botMessage.msgID === msg.id);
     if (botMessage !== undefined) {
@@ -543,11 +546,12 @@ client.on('messageDelete', async (msg) => {
     }
 });
 
-if (['true', '1'].includes(process.env.DM_INTRO.toLowerCase())) {
-    client.on('guildMemberAdd', member => {
+// Send an intro message to new channel members
+client.on('guildMemberAdd', member => {
+    if (['true', '1'].includes(process.env.DM_INTRO.toLowerCase())) {
         member.send(mustache.render(templates['intro.md'], {}));
-    });
-}
+    }
+});
 
 /*
 client.on('channelPinsUpdate', (channel, time) => {

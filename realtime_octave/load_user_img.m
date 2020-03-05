@@ -7,6 +7,6 @@ function load_user_img(user_work_file, image_file)
 
     % Save the users uploaded image as variable `img`, then save the workspace
     img = imread(image_file);
-    save(user_work_file);
+    save_workspace;
 
 end

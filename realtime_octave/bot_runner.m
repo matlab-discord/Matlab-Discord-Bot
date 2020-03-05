@@ -22,7 +22,7 @@ function bot_runner(out_file, user_work_file)
         % Record the users graphic handle
         usergcf = hdl2struct(gcf);
         % Save their data to a workspace
-        save(user_work_file);
+        save_workspace;
     catch e % caught an error. display the error
         disp(e.message);
     end
