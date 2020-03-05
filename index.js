@@ -137,7 +137,9 @@ const router = [{
 
             // Typical command.  Run/compute user code
             case "oct":
-                var oct_call_regexp = /!oct\s*(?:```matlab)?((?:[\s\S.])*[^`])(?:```)?$/;
+            case "octave":
+            case "orun":
+                var oct_call_regexp = /!o\w+\s*(?:```matlab)?((?:[\s\S.])*[^`])(?:```)?$/;
                 var oct_call_tokens = msg.content.match(oct_call_regexp);
 
                 // Grab the users commands
@@ -193,7 +195,10 @@ const router = [{
                 }); 
                 break;
 
+            // Octave Print.  Print the current users graphic figure saved in the workspace to chat
             case "opr":
+            case "oprint":
+            case "octaveprint":
 
                 var cmd_format = util.format(`addpath('%s'); print_user_gcf('%s', '%s')`, rt_octave_folder, user_work_file, rt_octave_printout);
                 var octave_call = util.format('octave --no-gui --eval "%s"', cmd_format);
@@ -209,8 +214,10 @@ const router = [{
                 });
                 break;
 
+            // Octave upload.  Upload attached image to users workspace
             case "oup":
-
+            case "oupload":
+            case "octaveupload":
                 // Check if there were any attachments with this message
                 if(msg.attachments.size == 0) {
                     msg.channel.send("Nothing was uploaded.");
@@ -218,15 +225,16 @@ const router = [{
                 }
                 
                 // Valid image type extensions
-                var valid_filetypes_regexp = /.*\.(png)|(jpe?g)|(tif)/;
+                var valid_filetypes_regexp = /.*\.((?:png)|(?:jpe?g)|(?:gif)|(?:tif{1,2}))/;
 
                 // Grab the message attachment
                 var msg_attachment = msg.attachments.values().next().value;
 
-                var attachment_filetype = msg_attachment.filename.match(/\.(\w+)/);
+                // Get the attachment filetype this user uploaded
+                var attachment_filetype = msg_attachment.filename.match(valid_filetypes_regexp);
 
                 // Check if the uploaded attachment is a valid image type
-                if(msg_attachment.filename.match(valid_filetypes_regexp) === null) {
+                if(attachment_filetype === null) {
                     msg.channel.send("Invalid image type. Can't upload.");
                     return;
                 }
@@ -238,7 +246,7 @@ const router = [{
                 download(msg_attachment.url, upload_filename, function(){
                     var cmd_format = util.format(`addpath('%s'); load_user_img('%s', '%s')`, rt_octave_folder, user_work_file, upload_filename);
                     var octave_call = util.format('octave --no-gui --eval "%s"', cmd_format);
-                    
+
                     // Call async system octave call with a timeout.  error if it exceeds
                     exec(octave_call, {timeout: rt_octave_timeout}, function(err, stdout, stderr) {
                         if(err) { // if there was an error
@@ -249,9 +257,11 @@ const router = [{
                         }
                     });
                 });
+                break;
 
             default:
-
+                //nothing
+                break;
         }
 
        
