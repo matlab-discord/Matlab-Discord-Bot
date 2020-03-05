@@ -168,7 +168,7 @@ const router = [{
                     var octave_call = util.format('octave --no-gui --eval "%s"', cmd_format);
 
                     // Call async system octave call with a timeout.  error if it exceeds
-                    exec(octave_call, {timeout: 10000}, function(err, stdout, stderr) {
+                    exec(octave_call, {timeout: rt_octave_timeout}, function(err, stdout, stderr) {
                         if(err) { // if there was an error
                             console.log(err); // log the error
                             msg.channel.send("Your command timed out.");
