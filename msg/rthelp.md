@@ -1,16 +1,24 @@
-**This bot has the ability to process octave code in realtime, posting console outputs to the chat.**
+**This bot has the ability to process MATLAB code in realtime, posting console outputs to the chat.**
 > • Certain functions and operations have been restricted to work properly with discord.  
-> • Each user has their own individual workspace, allowing you to save figures and variables.
-> • All related functions to realtime octave usage can be found in `!help`.
+> • Each user has their own individual workspace, allowing you to save variables.
 
-**To use realtime octave, type your commands as followed.**
-> !oct\`\`\`matlab
+*Realtime Octave code is also able to be processed in chat.  See `!rtocthelp` for more instructions*
+
+**Related Functions:**
+```
+!run <code> : Execute code and post console output to channel.
+
+!print : Print current graphic figure to channel. The figure printed is associated with the last graphic figure generated among all users. 
+```
+
+**Example use realtime MATLAB, type your commands as followed.**
+> !run\`\`\`matlab
 >   foobar = 1:10; % my command
 >   disp(foobar);
 > \`\`\`
 
 **This will create a formatted message that the bot can understand and execute.**
-> !oct```matlab
+> !run```matlab
 >   foobar = 1:10; % my command
 >   disp(foobar);
 > ```
