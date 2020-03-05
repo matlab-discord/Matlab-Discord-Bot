@@ -62,6 +62,7 @@ realtime_octave/bot_out.txt
 realtime_octave/user_printout.png
 realtime_octave/user_code.m
 realtime_octave/workspaces/*.mat
+realtime_octave/user_upload.*
 
 # next.js build output
 .next

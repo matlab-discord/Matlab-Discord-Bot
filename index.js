@@ -8,6 +8,7 @@ const roll  = require('./src/roll');
 const latex = require('./src/latex');
 const exec  = require('child_process').exec; // for sys calls
 const execSync  = require('child_process').execSync; // for synchronous sys calls
+const request = require('request');
 const util  = require('util');
 
 // Define some universal constants
@@ -24,6 +25,17 @@ const rt_octave_timeout     = 5000; // time in ms
 // Load in illegal use functions for realtime octave and compile them as a regexp
 var illegal_read = fs.readFileSync(util.format('%s/illegal_phrases', rt_octave_folder), 'utf8');
 const illegal_use_regexp = new RegExp('(' + illegal_read.replace(/\n/g, ')|(') + ')');
+
+
+//  Function to download images easily
+const download = function(uri, filename, callback){
+    request.head(uri, function(err, res, body){
+      console.log('content-type:', res.headers['content-type']);
+      console.log('content-length:', res.headers['content-length']);
+  
+      request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
+    });
+  };
 
 /*
  * Function to read out all files in a folder.
@@ -103,102 +115,149 @@ const render = async function (msg, filename, view = {}, opts = {}, deleteMsg = 
  */
 const router = [{
     // Realtime octave
-    regexp: /!oct\s*(?:```matlab)?((?:[\s\S.])*[^`])(?:```)?$/,
-    use: function (msg, tokens) {
-
-        // Grab the users commands
-        var code = tokens[1];
-
-        // Don't allow the use of this function in DM's
-        if((msg.guild === null) && (msg.author.id != process.env.OWNER_ID)) {
-            msg.channel.send("Use of realtime octave is not allowed in DM's.  Please visit the main channel.");
-            return;
-        }
-        
-        // Check for illegal command usage and warn against it...
-        var found_illegal_match = code.match(illegal_use_regexp);
-        if(found_illegal_match) {
-            msg.channel.send("Someone was being naughty <@" + process.env.OWNER_ID + ">");
-            return;
-        }
-
-        // Write the users code command to a file. continue execution if it works
-        fs.writeFile(rt_octave_user_code, code, function(err) {
-
-            // Check for a file write error
-            if(err) {
-                console.log('--------- FILE WRITE ERROR ----------------');
-                console.log(err);
-                msg.channel.send('Something went wrong. <@' + process.env.OWNER_ID + '>');
-                return;
-            }   
-
-            // Figure out the workspace filename for this user
-            var user_id = util.format('%s#%d', msg.author.username, msg.author.discriminator);
-            var user_work_file  = util.format('%s/%s.mat', rt_octave_workspaces, user_id);
-            
-            // Format system call for octave CLI
-            var cmd_format = util.format(`addpath('%s'); bot_runner('%s', '%s')`, rt_octave_folder, rt_octave_out_file, user_work_file);
-            var octave_call = util.format('octave --no-gui --eval "%s"', cmd_format);
-
-            // Call async system octave call with a timeout.  error if it exceeds
-            exec(octave_call, {timeout: rt_octave_timeout}, function(err, stdout, stderr) {
-                if(err) { // if there was an error
-                    console.log(err); // log the error
-                    msg.channel.send("Your command timed out.");
-                } else { // Read the output file
-                    fs.readFile(rt_octave_out_file, 'utf8', function(err, data) {
-                        if (err) {
-                            console.log('--------- FILE READ ERROR ----------------')
-                            console.log(err);
-                            console.log(rt_octave_out_file);
-                            msg.channel.send('Something went wrong. <@' + process.env.OWNER_ID + '>');
-                        } else { // Send the output file message
-
-                            // Make sure it doesn't exceed the max message length before sending
-                            var msg_out = util.format("```matlab\n%s```", data);
-                            if(msg_out.length >= lengthMaxBotMessages) {
-                                msg.channel.send("Command executed, but output is too long to display.");
-                            } else {
-                                msg.channel.send(util.format("```matlab\n%s```",data));
-                            }
-                        }
-                    });
-                }
-            });
-        }); 
-
-    } // end function
-}, { // Print realtime octave graphic figure
-    regexp: /!opr$/,
+    regexp: /^!o(\w+)/,
     use: function (msg, tokens) {
 
         // Don't allow the use of this function in DM's
-        if((msg.guild === null) && (msg.author.id != process.env.OWNER_ID)) {
-            msg.channel.send("Use of realtime octave is not allowed in DM's.  Please visit the main channel.");
+        // if((msg.guild === null) && (msg.author.id != process.env.OWNER_ID)) {
+        if(msg.guild === null) {
+            msg.channel.send("Use of all realtime octave functions are not allowed in DM's.  Please visit the main channel.");
             return;
         }
-        
+
         // Figure out the workspace filename for this user
         var user_id = util.format('%s#%d', msg.author.username, msg.author.discriminator);
         var user_work_file  = util.format('%s/%s.mat', rt_octave_workspaces, user_id);
+                    
+        // Grab the realtime octave operation that the user called
+        var operation = "o"+tokens[1];
 
-        var cmd_format = util.format(`addpath('%s'); print_user_gcf('%s', '%s')`, rt_octave_folder, user_work_file, rt_octave_printout);
-        var octave_call = util.format('octave --no-gui --eval "%s"', cmd_format);
+        // Control switch for different real time octave operations
+        switch(operation) {
 
-        // Call async system octave call with a timeout.  error if it exceeds
-        exec(octave_call, {timeout: rt_octave_timeout}, function(err, stdout, stderr) {
-            if(err) { // if there was an error
-                console.log(err); // log the error
-                msg.channel.send("You don't have a graphics figure generated.");
-            } else { // Read the output file
-                msg.channel.send('', {files: [rt_octave_printout]});
-            }
-        });
+            // Typical command.  Run/compute user code
+            case "oct":
+                var oct_call_regexp = /!oct\s*(?:```matlab)?((?:[\s\S.])*[^`])(?:```)?$/;
+                var oct_call_tokens = msg.content.match(oct_call_regexp);
 
+                // Grab the users commands
+                var code = oct_call_tokens[1];
 
-    }
-},  {
+                // Check for illegal command usage and warn against it...
+                var found_illegal_match = code.match(illegal_use_regexp);
+                if(found_illegal_match) {
+                    msg.channel.send("Someone was being naughty <@" + process.env.OWNER_ID + ">");
+                    return;
+                }
+
+                // Write the users code command to a file. continue execution if it works
+                fs.writeFile(rt_octave_user_code, code, function(err) {
+
+                    // Check for a file write error
+                    if(err) {
+                        console.log('--------- FILE WRITE ERROR ----------------');
+                        console.log(err);
+                        msg.channel.send('Something went wrong. <@' + process.env.OWNER_ID + '>');
+                        return;
+                    }   
+
+                    // Format system call for octave CLI
+                    var cmd_format = util.format(`addpath('%s'); bot_runner('%s', '%s')`, rt_octave_folder, rt_octave_out_file, user_work_file);
+                    var octave_call = util.format('octave --no-gui --eval "%s"', cmd_format);
+
+                    // Call async system octave call with a timeout.  error if it exceeds
+                    exec(octave_call, {timeout: rt_octave_timeout}, function(err, stdout, stderr) {
+                        if(err) { // if there was an error
+                            console.log(err); // log the error
+                            msg.channel.send("Your command timed out.");
+                        } else { // Read the output file
+                            fs.readFile(rt_octave_out_file, 'utf8', function(err, data) {
+                                if (err) {
+                                    console.log('--------- FILE READ ERROR ----------------')
+                                    console.log(err);
+                                    console.log(rt_octave_out_file);
+                                    msg.channel.send('Something went wrong. <@' + process.env.OWNER_ID + '>');
+                                } else { // Send the output file message
+
+                                    // Make sure it doesn't exceed the max message length before sending
+                                    var msg_out = util.format("```matlab\n%s```", data);
+                                    if(msg_out.length >= lengthMaxBotMessages) {
+                                        msg.channel.send("Command executed, but output is too long to display.");
+                                    } else {
+                                        msg.channel.send(util.format("```matlab\n%s```",data));
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }); 
+                break;
+
+            case "opr":
+
+                var cmd_format = util.format(`addpath('%s'); print_user_gcf('%s', '%s')`, rt_octave_folder, user_work_file, rt_octave_printout);
+                var octave_call = util.format('octave --no-gui --eval "%s"', cmd_format);
+
+                // Call async system octave call with a timeout.  error if it exceeds
+                exec(octave_call, {timeout: rt_octave_timeout}, function(err, stdout, stderr) {
+                    if(err) { // if there was an error
+                        console.log(err); // log the error
+                        msg.channel.send("You don't have a graphics figure generated.");
+                    } else { // Read the output file
+                        msg.channel.send('', {files: [rt_octave_printout]});
+                    }
+                });
+                break;
+
+            case "oup":
+
+                // Check if there were any attachments with this message
+                if(msg.attachments.size == 0) {
+                    msg.channel.send("Nothing was uploaded.");
+                    return;
+                }
+                
+                // Valid image type extensions
+                var valid_filetypes_regexp = /.*\.(png)|(jpe?g)|(tif)/;
+
+                // Grab the message attachment
+                var msg_attachment = msg.attachments.values().next().value;
+
+                var attachment_filetype = msg_attachment.filename.match(/\.(\w+)/);
+
+                // Check if the uploaded attachment is a valid image type
+                if(msg_attachment.filename.match(valid_filetypes_regexp) === null) {
+                    msg.channel.send("Invalid image type. Can't upload.");
+                    return;
+                }
+
+                // Grab the variable name for the image uplaod
+                var upload_filename = util.format('%s/user_upload.%s', rt_octave_folder, attachment_filetype[1]);
+
+                // Download the image from discord URL, then read into octave and save to the users workspace
+                download(msg_attachment.url, upload_filename, function(){
+                    var cmd_format = util.format(`addpath('%s'); load_user_img('%s', '%s')`, rt_octave_folder, user_work_file, upload_filename);
+                    var octave_call = util.format('octave --no-gui --eval "%s"', cmd_format);
+                    
+                    // Call async system octave call with a timeout.  error if it exceeds
+                    exec(octave_call, {timeout: rt_octave_timeout}, function(err, stdout, stderr) {
+                        if(err) { // if there was an error
+                            console.log(err); // log the error
+                            msg.channel.send('Something went wrong. <@' + process.env.OWNER_ID + '>');
+                        } else { // Read the output file
+                            msg.channel.send('Image saved to your workspace as variable `img`.');
+                        }
+                    });
+                });
+
+            default:
+
+        }
+
+       
+
+    } // end function
+}, {
     regexp: /!(m|doc) (.+?)(\s.*)?$/, // E.g. if "!m interp1" or "!doc interp1"
     use: function (msg, tokens) {
         const query = tokens[2].trim();
