@@ -14,7 +14,9 @@
 
 !help : Display this help message.
 
-!intro : Post the intro that is DM'd to new users, when joining the server for the first time.
+!intro : Post the intro that is DM'd to new users when joining the server for the first time.
+
+!jobs : Fetch the MathWorks jobs URL.
 
 !matlab : Matlab description.
 
