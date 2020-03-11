@@ -1,21 +1,24 @@
 const fetch = require('./fetch');
 const querystring = require('querystring');
+const util = require('util');
 
-const host = 'http://latex2png.com';
+// Host site for url fetch
+const host = 'https://latex.codecogs.com';
 
 async function latex2pngurl(latex){
+
+    // Establish paramters that configure the look of the latex
     const params = {
         latex: latex,
-        color: 'FFFFFF',
-        x: 100,
-        y: 20,
-        res: 200
-    };
-    const url = host + '/?' + querystring.stringify(params);
-    const source = await fetch(url, 'text');
-    const tokens = /document\.getElementById\("image_result"\)\.src = "(.+\.png)";/.exec(source);
-    const imgage_url = host + tokens[1];
-    return imgage_url;
+        filetype: 'png',
+        bgcolor: 'white',
+        dpi: 150,
+        size: 'large'
+    }
+
+    // Build the latex URL relevent to our host
+    const url = util.format('%s/%s.latex?\\dpi{%d}&space;\\bg_%s&space;\\%s&space;%s', host, params.filetype, params.dpi, params.bgcolor, params.size, latex);
+    return url;
 }
 
 module.exports = latex2pngurl;

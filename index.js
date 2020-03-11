@@ -287,11 +287,15 @@ const router = [{
     use: function (msg, tokens) {
         const query = tokens[1].trim();
         latex(query).then((imgUrl) => {
-            msg.channel.send('', {
-                file: imgUrl
-            }).then((sent) => {
-                addBotMessage(msg.id, msg.channel.id, sent.id);
-            }).catch(console.error);
+
+            // Download the image from the url (this url is strange, doesn't have an extension ending) then send
+            download(imgUrl, 'img/latex.png', function(){
+                msg.channel.send('', {file: 'img/latex.png'
+                    }).then((sent) => {
+                        addBotMessage(msg.id, msg.channel.id, sent.id);
+                    }).catch(console.error);
+            });
+            // If there was an error 
         }).catch((error) => {
             if (error) {
                 msg.channel.send('Could not parse latex.');
