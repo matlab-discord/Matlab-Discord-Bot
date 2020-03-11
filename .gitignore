@@ -57,6 +57,9 @@ typings/
 # dotenv environment variables file
 .env
 
+# latex image file
+img/latex.png
+
 # realtime octave outputs
 realtime_octave/bot_out.txt
 realtime_octave/user_printout.png
