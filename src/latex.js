@@ -1,27 +1,38 @@
-const fetch = require('./fetch');
-const querystring = require('querystring');
 const util = require('util');
 
 // Host site for url fetch
-const host = 'https://latex.codecogs.com';
+const host = 'https://chart.apis.google.com/chart?';
 
 async function latex2pngurl(latex){
 
     // Establish paramters that configure the look of the latex
-    const params = {
-        latex: latex,
-        filetype: 'png',
-        bgcolor: 'white',
-        dpi: 150,
-        size: 'large'
+    const config = {
+        bgcolor: '36393F',
+        alpha:  '80',
+        textcolor: 'FFFFFF',
+        height: 40
     }
 
     // Build the latex URL relevent to our host
-    const url = util.format('%s/%s.latex?\\dpi{%d}&space;\\bg_%s&space;\\%s&space;%s', host, params.filetype, params.dpi, params.bgcolor, params.size, latex);
+    const url = util.format('%scht=tx&chl=%s&chs=%d&chf=bg,s,%s%s&chco=%s', host, encodeURIComponent(latex), config.height, config.bgcolor, config.alpha, config.textcolor);
+
     return url;
 }
 
+
+// could maybe use for more encoding options? don't think it's necessary
+// function urlencode(str) {
+//     str = (str + '').toString();
+  
+//     // Tilde should be allowed unescaped in future versions of PHP (as reflected below), but if you want to reflect current
+//     // PHP behavior, you would need to add ".replace(/~/g, '%7E');" to the following.
+//     return encodeURIComponent(str)
+//       .replace('!', '%21')
+//       .replace('\'', '%27')
+//       .replace('(', '%28')
+//       .replace(')', '%29')
+//       .replace('*', '%2A')
+//       .replace('%20', '+');
+//   }
+
 module.exports = latex2pngurl;
-
-
-// http://latex2png.com/?latex=y+%3D+%5Csum_%7Bi%3D0%7D%5E%7B50%7D+x_i&res=300&color=FFFFFF&x=100&y=20
