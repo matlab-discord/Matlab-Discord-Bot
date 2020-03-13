@@ -115,7 +115,7 @@ const render = async function (msg, filename, view = {}, opts = {}, deleteMsg = 
  */
 const router = [{
     // Realtime octave
-    regexp: /^!((?:oct)|(?:opr)|(?:oup))/,
+    regexp: /^!((?:oct)|(?:opr)|(?:oup)|(?:orun))/,
     use: function (msg, tokens) {
 
         // Don't allow the use of this function in DM's
@@ -186,7 +186,12 @@ const router = [{
                                     if(msg_out.length >= lengthMaxBotMessages) {
                                         msg.channel.send("Command executed, but output is too long to display.");
                                     } else {
-                                        msg.channel.send(util.format("```matlab\n%s```",data));
+                                        if(operation === 'orun') { // special case to post non formatted 
+                                            msg.channel.send(util.format("%s",data));
+                                        }
+                                        else {
+                                            msg.channel.send(util.format("```matlab\n%s```",data));
+                                        }
                                     }
                                 }
                             });
@@ -283,7 +288,7 @@ const router = [{
             });
     }
 }, {
-    regexp: /[!$]`(.+)`\$?/, // Latex parser TODO original site down :(
+    regexp: /[!$]`(.+)`\$?/, // Latex parser 
     use: function (msg, tokens) {
         const query = tokens[1].trim();
         latex(query).then((imgUrl) => {

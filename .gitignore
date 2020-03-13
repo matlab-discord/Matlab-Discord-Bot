@@ -57,6 +57,9 @@ typings/
 # dotenv environment variables file
 .env
 
+# test scrips 
+testing_scripts/*.m 
+
 # latex image file
 img/latex.png
 
@@ -66,6 +69,7 @@ realtime_octave/user_printout.png
 realtime_octave/user_code.m
 realtime_octave/workspaces/*.mat
 realtime_octave/user_upload.*
+realtime_octave/run_scrum.m
 
 # next.js build output
 .next
