@@ -63,6 +63,9 @@ testing_scripts/*.m
 # latex image file
 img/latex.png
 
+# Log file
+log.txt
+
 # realtime octave outputs
 realtime_octave/bot_out.txt
 realtime_octave/user_printout.png

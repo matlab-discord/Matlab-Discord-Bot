@@ -9,14 +9,13 @@ function bot_runner(out_file, user_work_file)
         delete(out_file); 
     end
 
-    % Load the workspace file if it exists
-    if(exist(user_work_file, 'file'))
-        load(user_work_file);
-    end
-
     % start diary and try user code
     diary(out_file);
     try
+        % Load the workspace file if it exists
+        if(exist(user_work_file, 'file'))
+            load_workspace;
+        end
         % Run the users code. Stored as a script file
         user_code;
         % Record the users graphic handle

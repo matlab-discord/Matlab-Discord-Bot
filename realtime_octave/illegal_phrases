@@ -68,7 +68,7 @@ ftell
 fwrite
 importdata
 imread
-load
+(?:[^up]|^)load
 readcell
 readmatrix
 readtable

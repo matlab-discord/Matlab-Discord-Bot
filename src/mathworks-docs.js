@@ -1,7 +1,7 @@
 let fetch = require('./fetch');
 
 async function searchDocs(query) {
-    const queryURL = 'https://mathworks.com/help/search/suggest/doccenter/en/R2019b?q=' + query;
+    const queryURL = 'https://mathworks.com/help/search/suggest/doccenter/en/R2020a?q=' + query;
     const d = await fetch(queryURL, 'json');
     const suggestion = d.pages[0].suggestions[0];
     return {

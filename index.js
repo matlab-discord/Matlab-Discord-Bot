@@ -37,6 +37,23 @@ const download = function(uri, filename, callback){
     });
   };
 
+// Write message to log file.  appends new line 
+const writeLog = function(logMsg, logType) {
+    // Open a write stream for the log file. Append to the end
+    var logStream = fs.createWriteStream("log.txt", {flags: 'a'});
+    var theDate = new Date();
+    var dateStr = theDate.toLocaleString();
+    try { // Try to write the log 
+        logStream.write(theDate.toLocaleString() + ": " + logType + " - " + logMsg + "\n");
+    }
+    catch(error) {
+        console.log(error);
+        logStream.write("Error writing log... " + error + "\n")
+    }
+    // End the log
+    logStream.end();
+}
+
 /*
  * Function to read out all files in a folder.
  */
@@ -230,7 +247,7 @@ const router = [{
                 }
                 
                 // Valid image type extensions
-                var valid_filetypes_regexp = /.*\.((?:png)|(?:jpe?g)|(?:gif)|(?:tif{1,2}))/;
+                var valid_filetypes_regexp = /.*\.((?:mat)|(?:png)|(?:jpe?g)|(?:gif)|(?:tif{1,2}))/;
 
                 // Grab the message attachment
                 var msg_attachment = msg.attachments.values().next().value;
@@ -243,13 +260,35 @@ const router = [{
                     msg.channel.send("Invalid image type. Can't upload.");
                     return;
                 }
+                console.log(attachment_filetype);
+                switch(attachment_filetype[1]) {
+                    case "mat":
+                            filetype = "data";
+                        break;
+
+                    default: 
+                            filetype = "image";
+                        break;
+                }
 
                 // Grab the variable name for the image uplaod
                 var upload_filename = util.format('%s/user_upload.%s', rt_octave_folder, attachment_filetype[1]);
 
                 // Download the image from discord URL, then read into octave and save to the users workspace
                 download(msg_attachment.url, upload_filename, function(){
-                    var cmd_format = util.format(`addpath('%s'); load_user_img('%s', '%s')`, rt_octave_folder, user_work_file, upload_filename);
+                    var out_msg;
+                    switch(filetype) {
+                        case "data":
+                            var cmd_format = util.format(`addpath('%s'); load_user_data('%s', '%s')`, rt_octave_folder, user_work_file, upload_filename);
+                            out_msg = "Data uploaded to your workspace.";
+                            break;
+
+                        case "image":
+                            var cmd_format = util.format(`addpath('%s'); load_user_img('%s', '%s')`, rt_octave_folder, user_work_file, upload_filename);
+                            out_msg = "Image saved to your workspace as variable `img`.";
+                            break;
+                    }
+                    // var cmd_format = util.format(`addpath('%s'); load_user_img('%s', '%s')`, rt_octave_folder, user_work_file, upload_filename);
                     var octave_call = util.format('octave --no-gui --eval "%s"', cmd_format);
 
                     // Call async system octave call with a timeout.  error if it exceeds
@@ -258,7 +297,7 @@ const router = [{
                             console.log(err); // log the error
                             msg.channel.send('Something went wrong. <@' + process.env.OWNER_ID + '>');
                         } else { // Read the output file
-                            msg.channel.send('Image saved to your workspace as variable `img`.');
+                            msg.channel.send(out_msg);
                         }
                     });
                 });
@@ -484,10 +523,20 @@ client.on('message', msg => {
         return;
     }
 
+
+ 
     let tokens;
     let commandExecuted = false;
 
+    let privateMsg = false; // keep track of private messages 
 
+    // An empty guild indicates this is a private message. Log it
+    if(msg.guild === null) {
+        // Write to log file
+        privateMsg = true;
+        var theMsg = util.format("[%s, %s]: %s", msg.author.id, msg.author.username, msg.content);
+        writeLog(theMsg, "DM");
+    }
 
     for (const route of router) {
         if ((tokens = route.regexp.exec(msg.content)) !== null) {
@@ -510,6 +559,9 @@ client.on('message', msg => {
 
     if (/(cumsum|cummin|cummax|cumtrapz|cumsec|cumprod)/.exec(msg.content) !== null) {
         msg.react("💦");
+    }
+    if(/clowns?/.exec(msg.content) !== null) {
+        msg.react("🤡")
     }
     if (/[A-Za-z][\w]*\(\s*(0|-\s*\d+)\s*\)/.exec(msg.content) !== null) {
         render(msg, 'badsubscript.md');
