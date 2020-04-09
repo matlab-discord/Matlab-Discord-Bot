@@ -380,7 +380,7 @@ const router = [{
 	regexp: /(''')|('''matlab)/,
 	use: function(msg) {
 		var opts = {files: ['./img/backtick_highlight.png']};
-        	render(msg, 'code.md', {query: 'code'}, opts, true);
+        	render(msg, 'code.md', {query: 'code'}, opts, false);
 	}
 }, {
     regexp: /!youtube/,
@@ -449,13 +449,13 @@ const router = [{
         // check if the channel is a help channel first
         if(help_channel_ids.includes(msg.channel.id)) {
             var chan = msg.channel;
-            var timer_ind = help_channel_ids.indexOf(chan.id);
+            var chan_ind = help_channel_ids.indexOf(chan.id);
     
             // If the help channel is busy, clear its busy status
-            if(help_channel_timers[timer_ind] != null) {
-                clearTimeout(help_channel_timers[timer_ind]);
-                help_channel_timers[timer_ind] = null;
-                chan.setName(help_channel_names[timer_ind]);
+            if(help_channel_timers[chan_ind] != null) {
+                clearTimeout(help_channel_timers[chan_ind]);
+                help_channel_timers[chan_ind] = null;
+                chan.setName(help_channel_names[chan_ind]);
                 msg.channel.send("Channel is available for another question.")
                 msg.delete(20).catch(console.error);
             }
@@ -508,13 +508,9 @@ client.on('ready', () => {
 
      // Setup info for the help channel timers
     help_channel_ids    = ["450928036800364546", "456342124342804481", "456342247189774338", "644823196440199179", "601495308140019742", "453522391377903636"];
-    help_channel_timers = [];
+    help_channel_timers = Array(help_channel_ids.length).fill(null);
     help_channel_names  = ['matlab-help-1', 'matlab-help-2', 'matlab-help-3', 'help-channel', 'simulink-help', 'botspam'];
-    // Initialize an array that will hold the timers to null, and get the original name of the channels
-    for(var i = 0; i < help_channel_ids.length; i++) {
-        help_channel_timers[i]  = null;
-        //help_channel_names[i]   = client.channels.get(help_channel_ids[i]).name;
-    }
+
 
 });
 
@@ -522,8 +518,6 @@ client.on('message', msg => {
     if (msg.author.bot) {
         return;
     }
-
-
  
     let tokens;
     let commandExecuted = false;
@@ -563,29 +557,26 @@ client.on('message', msg => {
     if(/clowns?/.exec(msg.content) !== null) {
         msg.react("🤡")
     }
-    if (/[A-Za-z][\w]*\(\s*(0|-\s*\d+)\s*\)/.exec(msg.content) !== null) {
-        render(msg, 'badsubscript.md');
-    }
 
     // Check if one of the help channels is active. Set its status to busy
     if((!commandExecuted) && help_channel_ids.includes(msg.channel.id)) {
         var chan = msg.channel;
-        var timer_ind = help_channel_ids.indexOf(chan.id);
+        var chan_ind = help_channel_ids.indexOf(chan.id);
 
-        if(help_channel_timers[timer_ind] == null) {
-            var busy_chan_str = msg.channel.name + "-BUSY";
+        if(help_channel_timers[chan_ind] == null) {
+            var busy_chan_str = help_channel_names[chan_ind] + "-BUSY";
             chan.setName(busy_chan_str).then(newChannel => console.log(`Changing help channel to busy, ${newChannel.name}`)).catch(console.error); 
-            help_channel_timers[timer_ind] = setTimeout(function() {
-                chan.setName(help_channel_names[timer_ind]);
-                help_channel_timers[timer_ind] = null;
+            help_channel_timers[chan_ind] = setTimeout(function() {
+                chan.setName(help_channel_names[chan_ind]);
+                help_channel_timers[chan_ind] = null;
             }, 300000);
         }
         else {
             // This channel has a timer established already.  Clear it, then reset it
-            clearTimeout(help_channel_timers[timer_ind]);
-            help_channel_timers[timer_ind] = setTimeout(function() {
-                chan.setName(help_channel_names[timer_ind]);
-                help_channel_timers[timer_ind] = null;
+            clearTimeout(help_channel_timers[chan_ind]);
+            help_channel_timers[chan_ind] = setTimeout(function() {
+                chan.setName(help_channel_names[chan_ind]);
+                help_channel_timers[chan_ind] = null;
             }, 300000);
         }
 
