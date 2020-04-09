@@ -327,7 +327,7 @@ const router = [{
             });
     }
 }, {
-    regexp: /[!$]`(.+)`\$?/, // Latex parser 
+    regexp: /[[!$](?:`+)((?:[\s\S.])*[^`])(?:`+)$/, // Latex parser 
     use: function (msg, tokens) {
         const query = tokens[1].trim();
         latex(query).then((imgUrl) => {
