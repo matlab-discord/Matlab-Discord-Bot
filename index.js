@@ -26,6 +26,75 @@ const rt_octave_timeout     = 5000; // time in ms
 var illegal_read = fs.readFileSync(util.format('%s/illegal_phrases', rt_octave_folder), 'utf8');
 const illegal_use_regexp = new RegExp('(' + illegal_read.replace(/\n/g, ')|(') + ')');
 
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
+}
+
+let buildMinesweeperGrid = function(grid_size, perc_mines) {
+
+
+    let grid = Array(grid_size).fill().map(() => Array(grid_size))
+    let num_mines = Math.round(grid_size*grid_size*(perc_mines/100));
+
+    let num_spaces = grid_size*grid_size;
+    let mines_index = shuffle(Array.from(Array(num_spaces).keys())).slice(0, num_mines);
+    let mine_string = '||` M `||';
+    // Add the mines
+    for(var i = 0; i<grid_size; i++) {
+        for(var j = 0; j <grid_size; j++) {
+            if(mines_index.includes(i*grid_size + j)) {
+                grid[i][j] = mine_string;
+            }
+        }
+    }
+
+    var mine_count_this_grid = 0;
+    // Add the numbers
+    for(var i = 0; i<grid_size; i++) {
+        for(var j = 0; j <grid_size; j++) {
+            if(grid[i][j] == mine_string) {
+                continue;
+            }
+            mine_count_this_grid = 0;
+            for(var k = -1; k<=1; k++) {
+                if((i-k) < 0 || (i-k) > (grid_size-1) ){
+                    continue;
+                }
+                for(var z = -1; z<= 1; z++) {
+                    if( (j-z) < 0 || (j-z) > (grid_size-1)) {
+                        continue;
+                    } else {
+                        if(grid[i-k][j-z] == mine_string) {
+                            mine_count_this_grid++;
+                        }
+                    }
+                }
+            }
+            grid[i][j] = "||\` "+mine_count_this_grid.toString()+" \`||" ;
+        }
+    }
+
+    let discordMinesweeperGrid = `Total Spaces: ${num_spaces}  Total Mines: ${num_mines}\n`;
+    // Build the final string
+    for(var i = 0; i<grid_size; i++) {
+        for(var j = 0; j <grid_size; j++) {
+
+            discordMinesweeperGrid += grid[i][j] + " ";
+        }
+        discordMinesweeperGrid += "\n";
+    }
+
+    return discordMinesweeperGrid;
+}
+
+
 
 //  Function to download images easily
 const download = function(uri, filename, callback){
@@ -359,7 +428,20 @@ const router = [{
                 }
             });
     }
-}, {
+},  {
+    regexp: /^!minesweeper\s(\d+)(?:\s(\d+))?/,
+    use: function(msg, tokens) {
+        let grid_size = Number(tokens[1]);
+        let perc_mines;
+        if(tokens[2] == null) {
+            perc_mines = 20; // 20 percent by default
+        } else {
+            perc_mines = Number(tokens[2]);
+        }
+        msg.channel.send(buildMinesweeperGrid(grid_size, perc_mines));
+    }
+        
+},{
     regexp: /^!google\s*(.*)$/,
     use: function(msg, tokens) {
       var str = tokens[1];
@@ -377,7 +459,7 @@ const router = [{
 	  msg.delete(20).catch(console.error);
     }
 }, {
-	regexp: /(''')|('''matlab)/,
+	regexp: /((''')|('''matlab))[\S\s.]*'''/,
 	use: function(msg) {
 		var opts = {files: ['./img/backtick_highlight.png']};
         	render(msg, 'code.md', {query: 'code'}, opts, false);
@@ -433,15 +515,6 @@ const router = [{
             result: why(),
         });
     }
-}, {
-	regexp: /!ask/,
-	use: function (msg) {
-
-		var _msg = "You may ask your question in one of the help channels. _*Asking if there is someone available to help is unnecessary*_. Just post your question, providing as much detail as is necessary (along with whatever code you have written so far).";
-//		msg.channel.send("", {files: ['./img/dontask2ask.png']});
-		msg.channel.send(_msg);
-		msg.delete(20).catch(console.error);
-	}
 }, {
     regexp: /^!(done|close|finish|answered|exit)/, // allow users to clear the busy status of help channels
     use: function(msg) {
@@ -506,10 +579,14 @@ const client = new Discord.Client();
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
+    client.user.setActivity('Commands: !help', {type: 'PLAYING'})
+        .then(presence => 
+            console.log(`Activity set to ${presence.game.name}`))
+        .catch(console.error);
      // Setup info for the help channel timers
-    help_channel_ids    = ["450928036800364546", "456342124342804481", "456342247189774338", "644823196440199179", "601495308140019742", "453522391377903636"];
+    help_channel_ids    = ["450928036800364546", "456342124342804481", "456342247189774338", "701876298296983652", "644823196440199179", "601495308140019742", "453522391377903636"];
     help_channel_timers = Array(help_channel_ids.length).fill(null);
-    help_channel_names  = ['matlab-help-1', 'matlab-help-2', 'matlab-help-3', 'help-channel', 'simulink-help', 'botspam'];
+    help_channel_names  = ['matlab-help-1', 'matlab-help-2', 'matlab-help-3', 'matlab-help-4', 'help-channel', 'simulink-help', 'botspam'];
 
 
 });

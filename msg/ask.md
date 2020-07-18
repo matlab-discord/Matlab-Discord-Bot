@@ -1,3 +1,3 @@
-**Don't ask to ask**. Please just ask your question outright. If someone knows how to help you, they probably will if you just post the question here. You save time for everyone, including yourself.
+You may ask your question in one of the help channels. **Asking if there is someone available to help is unnecessary**. Post your question, providing as much detail as necessary along with whatever code you have written so far.
 
-**Do not ping users for help**. People who want to help will read the chat.
+https://dontasktoask.com/

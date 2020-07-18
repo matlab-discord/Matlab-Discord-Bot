@@ -4,7 +4,9 @@
 
 !`<latex>` : Renders a LaTeX image with supplied <latex> message.
 
-!about : About me.
+!about : About me. Get the GitHub repo link. 
+
+!bug : Fetch MathWorks contact link to report a bug.
 
 !code : Reminder on how to paste code into Discord chat.
 
@@ -20,7 +22,7 @@
 
 !jobs : Fetch the MathWorks jobs URL.
 
-!matlab : Matlab description.
+!online : Fetch the MATLAB online link.
 
 !onramp : Display the onramp message suggestion and fetch link.
 
