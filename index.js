@@ -199,7 +199,19 @@ const render = async function (msg, filename, view = {}, opts = {}, deleteMsg = 
 /*
  * Router for all commands detected via regexp.
  */
-const router = [{
+const router = [
+	{
+		regexp: /^!run/,
+		use: function(msg, tokens) {
+		  if(msg.guild === null) {
+	              msg.channel.send("Use of in chat MATLAB is not allowed in DM's.  Please visit the main channel.");
+	              return;
+	          }
+		}
+	},
+	
+	
+	{
     // Realtime octave
     regexp: /^!((?:oct)|(?:opr)|(?:oup)|(?:orun))/,
     use: function (msg, tokens) {
@@ -584,9 +596,9 @@ client.on('ready', () => {
             console.log(`Activity set to ${presence.game.name}`))
         .catch(console.error);
      // Setup info for the help channel timers
-    help_channel_ids    = ["450928036800364546", "456342124342804481", "456342247189774338", "701876298296983652", "644823196440199179", "601495308140019742", "453522391377903636"];
+    help_channel_ids    = ["450928036800364546", "456342124342804481", "456342247189774338", "701876298296983652", "644823196440199179", "601495308140019742", "750745113076170843", "453522391377903636"];
     help_channel_timers = Array(help_channel_ids.length).fill(null);
-    help_channel_names  = ['matlab-help-1', 'matlab-help-2', 'matlab-help-3', 'matlab-help-4', 'help-channel', 'simulink-help', 'botspam'];
+    help_channel_names  = ['matlab-help-1', 'matlab-help-2', 'matlab-help-3', 'matlab-help-4', 'help-channel', 'simulink-help-1', 'simulink-help-2', 'botspam'];
 
 
 });
