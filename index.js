@@ -467,7 +467,7 @@ const router = [{
 }, {
     regexp: /!youtube/,
     use: function (msg) {
-        getNewestVideo()
+        getNewestVideo(process.env.YOUTUBE_AUTH_KEY)
             .then(result => {
                 render(msg, 'youtube.md', {result});
             })

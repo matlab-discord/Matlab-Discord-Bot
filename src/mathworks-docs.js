@@ -51,8 +51,8 @@ async function getNewestTweet() {
     };
 }
 
-async function getNewestVideo() {
-    const video = (await fetch('https://hooktube.com/api?mode=channel&id=UCgdHSFcXvkN6O3NXvif0-pA', 'json')).items[0];
+async function getNewestVideo(token) {
+    const video = (await fetch('https://www.googleapis.com/youtube/v3/search?key=' + token + '&channelId=UCgdHSFcXvkN6O3NXvif0-pA&part=snippet,id&order=date&maxResults=1', 'json')).items[0];
     return {
         title: video.snippet.title,
         description: video.snippet.description,
