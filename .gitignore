@@ -74,6 +74,9 @@ realtime_octave/workspaces/*.mat
 realtime_octave/user_upload.*
 realtime_octave/run_scrum.m
 
+# VScode file
+.vscode
+
 # next.js build output
 .next
 

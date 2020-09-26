@@ -10,6 +10,7 @@ const exec  = require('child_process').exec; // for sys calls
 const execSync  = require('child_process').execSync; // for synchronous sys calls
 const request = require('request');
 const util  = require('util');
+const rtoct = require('./src/rt-octave');
 
 // Define some universal constants
 const lengthMaxBotMessages = 1000; // max message length
@@ -577,6 +578,10 @@ const router = [{
 const client = new Discord.Client();
 
 client.on('ready', () => {
+
+    // Clear out realtime octave workspaces on startup.  Fresh start! 
+    rtoct.clearWorkspaces();
+
     console.log(`Logged in as ${client.user.tag}!`);
 
     client.user.setActivity('Commands: !help', {type: 'PLAYING'})
@@ -595,7 +600,7 @@ client.on('message', msg => {
     if (msg.author.bot) {
         return;
     }
- 
+
     let tokens;
     let commandExecuted = false;
 
