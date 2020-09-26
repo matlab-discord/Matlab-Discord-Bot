@@ -1,7 +1,7 @@
 let fetch = require('./fetch');
 
 async function searchDocs(query) {
-    const queryURL = 'https://mathworks.com/help/search/suggest/doccenter/en/R2020a?q=' + query;
+    const queryURL = 'https://mathworks.com/help/search/suggest/doccenter/en/R2020b?q=' + query;
     const d = await fetch(queryURL, 'json');
     const suggestion = d.pages[0].suggestions[0];
     return {
@@ -51,8 +51,8 @@ async function getNewestTweet() {
     };
 }
 
-async function getNewestVideo() {
-    const video = (await fetch('https://hooktube.com/api?mode=channel&id=UCgdHSFcXvkN6O3NXvif0-pA', 'json')).items[0];
+async function getNewestVideo(token) {
+    const video = (await fetch('https://www.googleapis.com/youtube/v3/search?key=' + token + '&channelId=UCgdHSFcXvkN6O3NXvif0-pA&part=snippet,id&order=date&maxResults=1', 'json')).items[0];
     return {
         title: video.snippet.title,
         description: video.snippet.description,

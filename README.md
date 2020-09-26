@@ -11,9 +11,11 @@ Clone this repository (either to your PC or a host). Create a file called `.env`
 
 ```
 BOT_TOKEN=<your token here>
-NEWS_CHANNEL_ID=<channel ID>    # The discord chanenl ID for newest MathWorks blog posts and videos. Can leave blank.
-DM_INTRO=<0 or 1>               # If true (1) bot will send an intro message to new users who join the server.
-OWNER_ID=<Discord ID of owner>  # The ID for the owner of the bot (You, probably!) for debugging purposes only.  
+NEWS_CHANNEL_ID=<channel ID>                   # The discord chanenl ID for newest MathWorks blog posts and videos. Can leave blank.
+DM_INTRO=<0 or 1>                              # If true (1) bot will send an intro message to new users who join the server.
+YOUTUBE_AUTH_KEY=<Youtube authentication key>  # The Youtube authentication key used in the Youtube data api v3 for getting the last 
+                                                 youtube video published on the MATLAB channel.
+OWNER_ID=<Discord ID of owner>                 # The ID for the owner of the bot (You, probably!) for debugging purposes only.  
 ```
 
 Start the bot:

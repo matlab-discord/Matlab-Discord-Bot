@@ -24,11 +24,13 @@
 
 !online : Fetch the MATLAB online link.
 
-!onramp : Display the onramp message suggestion and fetch link.
+!onramp : Display the MATLAB onramp message suggestion and fetch link.
 
 !rand <n> : Return a random number between 1 and <n>, 6 by default. (roll)
 
 !rtocthelp : Instructions for how to utilize Realtime Octave in chat.
+
+!slonramp : Display the SImulink onramp message suggestion and fetch link.
 
 !why : Answer to all questions.
 ```
