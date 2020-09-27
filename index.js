@@ -597,8 +597,7 @@ client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
     client.user.setActivity('Commands: !help', {type: 'PLAYING'})
-        .then(presence => 
-            console.log(`Activity set to ${presence.game.name}`))
+        .then(presence => console.log(`Activity set to ${presence.presence.game.name}`))
         .catch(console.error);
      // Setup info for the help channel timers
     help_channel_ids    = ["450928036800364546", "456342124342804481", "456342247189774338", "701876298296983652", "644823196440199179", "601495308140019742", "750745113076170843", "453522391377903636"];
@@ -721,6 +720,8 @@ function initCronjobs() {
             .then(entry => {
                 cronjob.entry = entry;
                 cronjob.last_checked = new Date();
+                // On boot, submit the news one time
+                client.channels.get(process.env.NEWS_CHANNEL_ID).send(mustache.render(templates[cronjob.template], {result: entry}));
                 // Run cronjob
                 setInterval(() => {
                     cronjob.use()
