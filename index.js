@@ -727,9 +727,11 @@ function initCronjobs() {
                     cronjob.use()
                         .then(entry => {
                             cronjob.last_checked = new Date();
+                            // The latest entry hasn't changed, just return out
                             if (entry.title === cronjob.entry.title) {
                                 return;
                             }
+                            // Update with the newest entry and post to discord
                             cronjob.entry = entry;
                             client.channels.get(process.env.NEWS_CHANNEL_ID).send(mustache.render(templates[cronjob.template], {result: entry}));
                         })

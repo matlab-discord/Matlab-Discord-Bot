@@ -15,8 +15,19 @@ NEWS_CHANNEL_ID=<channel ID>                   # The discord chanenl ID for newe
 DM_INTRO=<0 or 1>                              # If true (1) bot will send an intro message to new users who join the server.
 YOUTUBE_AUTH_KEY=<Youtube authentication key>  # The Youtube authentication key used in the Youtube data api v3 for getting the last 
                                                  youtube video published on the MATLAB channel.
+TWITTER_BEARER_TOKEN=<Bearer Token>            # Twitter API OAuth 2.0 Bearer authorization token used for tweet pulling
 OWNER_ID=<Discord ID of owner>                 # The ID for the owner of the bot (You, probably!) for debugging purposes only.  
 ```
+
+Install library dependencies with `npm install`
+The following libraries have been used:
+
+* [cheerio](https://github.com/cheeriojs/cheerio)
+* [discord.js](https://github.com/discordjs/discord.js/)
+* [dotenv](https://github.com/motdotla/dotenv)
+* [mustache.js](https://github.com/janl/mustache.js/)
+* [request](https://github.com/request/request)
+* [request-promise](https://github.com/request/request-promise)
 
 Start the bot:
 
@@ -32,12 +43,3 @@ Usually the bot has to respond with a rendered message. The templates for these 
 
 The last regular expression is chosen in a way, that if no command applies, it will search for a template with the name of the command. This way "static" messages can be provided just by creating the template (e.g. `help.md` and `code.md`).
 
-## Credits
-
-Following libraries have been used:
-
-* [cheerio](https://github.com/cheeriojs/cheerio)
-* [discord.js](https://github.com/discordjs/discord.js/)
-* [dotenv](https://github.com/motdotla/dotenv)
-* [mustache.js](https://github.com/janl/mustache.js/)
-* [request](https://github.com/request/request)

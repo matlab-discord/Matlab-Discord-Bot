@@ -1,4 +1,6 @@
 let fetch = require('./fetch');
+const request = require('request-promise');
+const http = require("https");
 
 async function searchDocs(query) {
     const queryURL = 'https://mathworks.com/help/search/suggest/doccenter/en/R2020b?q=' + query;
@@ -12,6 +14,7 @@ async function searchDocs(query) {
     };
 }
 
+// Grabbing latest blog entry
 async function getNewestBlogEntry() {
     const d = await fetch('https://blogs.mathworks.com/');
     let [, , date] = /^(.*?)on (.+)$/.exec(d('.blogger-name').eq(0).text().trim());
@@ -24,33 +27,45 @@ async function getNewestBlogEntry() {
     };
 }
 
-const firstTweetIfFail = {title: '1037657952172363778', url: 'https://twitter.com/MATLAB/status/1037657952172363778'};
-let firstCall = true;
-
+// Grabbing latest tweet
 async function getNewestTweet() {
-    const d = await fetch('https://twitter.com/MATLAB');
-    let firstTweet = d('.js-stream-item.stream-item.stream-item').eq(0);
-    let id = firstTweet.attr('data-item-id');
-    let username = firstTweet.find('.username.u-dir.u-textTruncate').eq(0).text().trim();
 
-    /*
-     * If tweet is not by @Matlab, return undefined which will raise an error (not the best way to do this).
-     * The first call of this function will return a made up tweet if failed. So the cronjob does not crash.
-     */
-    if (username !== '@MATLAB') {
-        if (firstCall) {
-            firstCall = false;
-            return firstTweetIfFail;
+    // Use an HTTPS request with the twitter v2 API to grab the 20 latest tweets from the @MATLAB account.
+    // Search for the newest self published tweet (no quotes, no retweets, etc)
+    let latestTweet = await request.get("https://api.twitter.com/2/tweets/search/recent?query=from:MATLAB&tweet.fields=created_at,id,lang,referenced_tweets&expansions=author_id&user.fields=created_at&max_results=20", {
+        json: true,
+        'auth': {
+            'bearer': process.env.TWITTER_BEARER_TOKEN
         }
-        return undefined;
-    }
-    firstCall = false;
-    return {
-        title: id,
-        url: 'https://twitter.com/MATLAB/status/' + id
-    };
+    }).then((body) => {
+        // If there was an error, return JSON with "error" field
+        if (!("data" in body)) { 
+            throw("No tweets found in last 7 days from API request. (Account is no longer active?)");
+        }
+    
+        // Look for the first non referenced tweet and return it
+        for(var i = 0; i < body.data.length; i++) {
+            if(!("referenced_tweets" in body.data[i])) {
+                return {
+                    title: body.data[i].id,
+                    url: "https://twitter.com/MATLAB/status/" + body.data[i].id
+                };
+            }
+        }
+        
+        // If we got this far, this means there are no original tweets to post, only retweets... throw error.
+        // Kinda dumb way to handle this, but it works good 'nuff
+        throw("Account only contains retweets");
+    
+    }).catch((err) => {
+        // Want to throw the other errors so that they are caught by the cronjob
+        throw(err);
+    });
+
+    return latestTweet;
 }
 
+// Grabbing latest youtube video
 async function getNewestVideo() {
     // Grab the google APIs token 
     let token = process.env.YOUTUBE_AUTH_KEY;
