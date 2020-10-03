@@ -3,7 +3,7 @@ let fs = require('fs');
 // Function to clear out workspace `.mat` files 
 async function clearWorkspaces() {
     // Directory location for the workspace files
-    let workspace_location = './realtime_octave/workspaces';
+    let workspace_location = './inchat_octave/workspaces';
 
     // Read the directory and look through each file.
     fs.readdir(workspace_location, (err, files) => {

@@ -10,21 +10,21 @@ const exec  = require('child_process').exec; // for sys calls
 const execSync  = require('child_process').execSync; // for synchronous sys calls
 const request = require('request');
 const util  = require('util');
-const rtoct = require('./src/rt-octave');
+const icoct = require('./src/inchat-octave');
 
 // Define some universal constants
 const lengthMaxBotMessages = 1000; // max message length
 
-// Define the path variables for Realtime octave
-const rt_octave_folder      = './realtime_octave';
-const rt_octave_workspaces  = util.format('%s/workspaces', rt_octave_folder);
-const rt_octave_out_file    = util.format('%s/bot_out.txt', rt_octave_folder);
-const rt_octave_user_code   = util.format('%s/user_code.m', rt_octave_folder);
-const rt_octave_printout    = util.format('%s/user_printout.png', rt_octave_folder);
-const rt_octave_timeout     = 5000; // time in ms
+// Define the path variables for inchat octave
+const ic_octave_folder      = './inchat_octave';
+const ic_octave_workspaces  = util.format('%s/workspaces', ic_octave_folder);
+const ic_octave_out_file    = util.format('%s/bot_out.txt', ic_octave_folder);
+const ic_octave_user_code   = util.format('%s/user_code.m', ic_octave_folder);
+const ic_octave_printout    = util.format('%s/user_printout.png', ic_octave_folder);
+const ic_octave_timeout     = 5000; // time in ms
 
-// Load in illegal use functions for realtime octave and compile them as a regexp
-var illegal_read = fs.readFileSync(util.format('%s/illegal_phrases', rt_octave_folder), 'utf8');
+// Load in illegal use functions for inchat octave and compile them as a regexp
+var illegal_read = fs.readFileSync(util.format('%s/illegal_phrases', ic_octave_folder), 'utf8');
 const illegal_use_regexp = new RegExp('(' + illegal_read.replace(/\n/g, ')|(') + ')');
 
 function shuffle(a) {
@@ -100,8 +100,6 @@ let buildMinesweeperGrid = function(grid_size, perc_mines) {
 //  Function to download images easily
 const download = function(uri, filename, callback){
     request.head(uri, function(err, res, body){
-      console.log('content-type:', res.headers['content-type']);
-      console.log('content-length:', res.headers['content-length']);
   
       request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
     });
@@ -213,25 +211,25 @@ const router = [
 	
 	
 	{
-    // Realtime octave
-    regexp: /^!((?:oct)|(?:opr)|(?:oup)|(?:orun))/,
+    // Inchat octave (remove h for octhelp message)
+    regexp: /^!((?:oct(?=[^h]))|(?:opr)|(?:oup)|(?:orun))/,
     use: function (msg, tokens) {
 
         // Don't allow the use of this function in DM's
         // if((msg.guild === null) && (msg.author.id != process.env.OWNER_ID)) {
         if(msg.guild === null) {
-            msg.channel.send("Use of all realtime octave functions are not allowed in DM's.  Please visit the main channel.");
+            msg.channel.send("Use of all Octave functions are not allowed in DM's.  Please visit the main channel.");
             return;
         }
 
         // Figure out the workspace filename for this user
         var user_id = util.format('%s#%d', msg.author.username, msg.author.discriminator);
-        var user_work_file  = util.format('%s/%s.mat', rt_octave_workspaces, user_id);
+        var user_work_file  = util.format('%s/%s.mat', ic_octave_workspaces, user_id);
                     
-        // Grab the realtime octave operation that the user called
+        // Grab the octave operation that the user called
         var operation = tokens[1];
 
-        // Control switch for different real time octave operations
+        // Control switch for different inchat octave operations
         switch(operation) {
 
             // Typical command.  Run/compute user code
@@ -252,7 +250,7 @@ const router = [
                 }
 
                 // Write the users code command to a file. continue execution if it works
-                fs.writeFile(rt_octave_user_code, code, function(err) {
+                fs.writeFile(ic_octave_user_code, code, function(err) {
 
                     // Check for a file write error
                     if(err) {
@@ -263,20 +261,20 @@ const router = [
                     }   
 
                     // Format system call for octave CLI
-                    var cmd_format = util.format(`addpath('%s'); bot_runner('%s', '%s')`, rt_octave_folder, rt_octave_out_file, user_work_file);
+                    var cmd_format = util.format(`addpath('%s'); bot_runner('%s', '%s')`, ic_octave_folder, ic_octave_out_file, user_work_file);
                     var octave_call = util.format('octave --no-gui --eval "%s"', cmd_format);
 
                     // Call async system octave call with a timeout.  error if it exceeds
-                    exec(octave_call, {timeout: rt_octave_timeout}, function(err, stdout, stderr) {
+                    exec(octave_call, {timeout: ic_octave_timeout}, function(err, stdout, stderr) {
                         if(err) { // if there was an error
                             console.log(err); // log the error
                             msg.channel.send("Your command timed out.");
                         } else { // Read the output file
-                            fs.readFile(rt_octave_out_file, 'utf8', function(err, data) {
+                            fs.readFile(ic_octave_out_file, 'utf8', function(err, data) {
                                 if (err) {
                                     console.log('--------- FILE READ ERROR ----------------')
                                     console.log(err);
-                                    console.log(rt_octave_out_file);
+                                    console.log(ic_octave_out_file);
                                     msg.channel.send('Something went wrong. <@' + process.env.OWNER_ID + '>');
                                 } else { // Send the output file message
 
@@ -304,7 +302,7 @@ const router = [
             case "oprint":
             case "octaveprint":
 
-                var cmd_format = util.format(`addpath('%s'); print_user_gcf('%s', '%s')`, rt_octave_folder, user_work_file, rt_octave_printout);
+                var cmd_format = util.format(`addpath('%s'); print_user_gcf('%s', '%s')`, ic_octave_folder, user_work_file, ic_octave_printout);
                 var octave_call = util.format('octave --no-gui --eval "%s"', cmd_format);
 
                 // Call async system octave call with a timeout.  error if it exceeds
@@ -313,7 +311,7 @@ const router = [
                         console.log(err); // log the error
                         msg.channel.send("You don't have a graphics figure generated.");
                     } else { // Read the output file
-                        msg.channel.send('', {files: [rt_octave_printout]});
+                        msg.channel.send('', {files: [ic_octave_printout]});
                     }
                 });
                 break;
@@ -342,7 +340,6 @@ const router = [
                     msg.channel.send("Invalid image type. Can't upload.");
                     return;
                 }
-                console.log(attachment_filetype);
                 switch(attachment_filetype[1]) {
                     case "mat":
                             filetype = "data";
@@ -354,23 +351,23 @@ const router = [
                 }
 
                 // Grab the variable name for the image uplaod
-                var upload_filename = util.format('%s/user_upload.%s', rt_octave_folder, attachment_filetype[1]);
+                var upload_filename = util.format('%s/user_upload.%s', ic_octave_folder, attachment_filetype[1]);
 
                 // Download the image from discord URL, then read into octave and save to the users workspace
                 download(msg_attachment.url, upload_filename, function(){
                     var out_msg;
                     switch(filetype) {
                         case "data":
-                            var cmd_format = util.format(`addpath('%s'); load_user_data('%s', '%s')`, rt_octave_folder, user_work_file, upload_filename);
+                            var cmd_format = util.format(`addpath('%s'); load_user_data('%s', '%s')`, ic_octave_folder, user_work_file, upload_filename);
                             out_msg = "Data uploaded to your workspace.";
                             break;
 
                         case "image":
-                            var cmd_format = util.format(`addpath('%s'); load_user_img('%s', '%s')`, rt_octave_folder, user_work_file, upload_filename);
+                            var cmd_format = util.format(`addpath('%s'); load_user_img('%s', '%s')`, ic_octave_folder, user_work_file, upload_filename);
                             out_msg = "Image saved to your workspace as variable `img`.";
                             break;
                     }
-                    // var cmd_format = util.format(`addpath('%s'); load_user_img('%s', '%s')`, rt_octave_folder, user_work_file, upload_filename);
+                    // var cmd_format = util.format(`addpath('%s'); load_user_img('%s', '%s')`, ic_octave_folder, user_work_file, upload_filename);
                     var octave_call = util.format('octave --no-gui --eval "%s"', cmd_format);
 
                     // Call async system octave call with a timeout.  error if it exceeds
@@ -572,7 +569,8 @@ const router = [
                 
             case 'jobs':
             case 'help':
-            case 'rthelp':
+            case 'mathelp':
+            case 'octhelp':
                 // Preferablly keep the message on to see who is looking at jobs
                 delete_msg = false;
             default:
@@ -591,8 +589,8 @@ const client = new Discord.Client();
 
 client.on('ready', () => {
 
-    // Clear out realtime octave workspaces on startup.  Fresh start! 
-    rtoct.clearWorkspaces();
+    // Clear out octave workspaces on startup.  Fresh start! 
+    icoct.clearWorkspaces();
 
     console.log(`Logged in as ${client.user.tag}!`);
 

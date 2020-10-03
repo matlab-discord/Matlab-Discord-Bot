@@ -1,6 +1,6 @@
 **Commands:**
 ```
-!rthelp : Instruction for how to utilize Realtime MATLAB in chat.
+!mathelp: Instruction for how to utilize MATLAB in chat.
 
 !`<latex>` : Renders a LaTeX image with supplied <latex> message.
 
@@ -28,7 +28,7 @@
 
 !rand <n> : Return a random number between 1 and <n>, 6 by default. (roll)
 
-!rtocthelp : Instructions for how to utilize Realtime Octave in chat.
+!octhelp : Instructions for how to utilize Octave in chat.
 
 !slonramp : Display the SImulink onramp message suggestion and fetch link.
 

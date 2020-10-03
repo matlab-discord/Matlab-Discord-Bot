@@ -66,13 +66,13 @@ img/latex.png
 # Log file
 log.txt
 
-# realtime octave outputs
-realtime_octave/bot_out.txt
-realtime_octave/user_printout.png
-realtime_octave/user_code.m
-realtime_octave/workspaces/*.mat
-realtime_octave/user_upload.*
-realtime_octave/run_scrum.m
+# inchat octave outputs
+inchat_octave/bot_out.txt
+inchat_octave/user_printout.png
+inchat_octave/user_code.m
+inchat_octave/workspaces/*.mat
+inchat_octave/user_upload.*
+inchat_octave/run_scrum.m
 
 # VScode file
 .vscode

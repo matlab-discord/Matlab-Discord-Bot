@@ -1,4 +1,4 @@
-**This bot has the ability to process octave code in realtime, posting console outputs to the chat.**
+**This bot has the ability to process Octave code in Discord, posting console outputs to the chat.**
 > • Certain functions and operations have been restricted to work properly with discord.  
 > • Each user has their own individual workspace, allowing you to save figures and variables.
 
@@ -11,7 +11,7 @@
 !oup : Upload attached image file to users workspace. (oupload, octaveupload)
 ```
 
-**Example use realtime octave, type your commands as followed.**
+**Example use of in-chat Octave, type your commands as followed.**
 > !oct\`\`\`matlab
 >   foobar = 1:10; % my command
 >   disp(foobar);
