@@ -220,26 +220,37 @@ const router = [
 	}, {
         
         // Will take the last posted message and run any code found within a code block (wrapped in backticks ```)
-        regexp: /^!runcode$/,
+        regexp: /^!execute$/,
         use: function(msg) {
-            msg.channel.fetchMessages({limit: 2})
+            msg.channel.fetchMessages({limit: 6})
             .then(msgMap => {
                 let _old_msgs = Array.from(msgMap.values());
-                let codeMsg = _old_msgs[1];
 
-                let codeSearchRegexp = /```(?:matlab)?((\w|\s|\S)*)(?:```)/;
-                let codeSearchTokens = codeMsg.content.match(codeSearchRegexp);
-                if(codeSearchTokens == null) { // couldn't find a match
-                    msg.channel.send("Message doesn't contain a valid code formatting block. (Wrapped in \`\`\`)");
-                    return;
+                // Remove the first message (this is the message that called the execute)
+                _old_msgs.splice(0,1);
+
+                // Loop through the messages from newest to oldest, find a valid code block
+                for(var i = 0; i < _old_msgs.length; i++) {
+
+                    let codeMsg = _old_msgs[i]; // check the message
+                    let codeSearchRegexp = /```(?:matlab)?((\w|\s|\S)*)(?:```)/;
+                    let codeSearchTokens = codeMsg.content.match(codeSearchRegexp);
+                    // Couldn't find a match.  move onto the next message (if there is one) or break out with error message
+                    if(codeSearchTokens == null) { // couldn't find a match
+                        if(i == _old_msgs.length-1) { // end of loop
+                            msg.channel.send("Message doesn't contain a valid code formatting block. (Wrapped in \`\`\`)");
+                            return;
+                        }
+                        continue;
+                    }
+                    let codeToRun = codeSearchTokens[1];
+                    let run_command = util.format("!run```matlab\n%s```", codeToRun);
+                    // Run the code, then delete message immediately
+                    msg.channel.send(run_command).then(msg => msg.delete(20).catch(console.error));
+                    break; // break out of the loop since we found a valid message
                 }
-                let codeToRun = codeSearchTokens[1];
-                let run_command = util.format("!run```matlab\n%s```", codeToRun);
-                // Run the code, then delete message immediately
-                msg.channel.send(run_command).then(msg => msg.delete(20).catch(console.error));
             })
             .catch(err => console.error(err));
-
         }
     },
 	
