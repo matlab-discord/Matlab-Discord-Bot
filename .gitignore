@@ -77,6 +77,9 @@ inchat_octave/run_scrum.m
 # VScode file
 .vscode
 
+# Storage files
+storage/cronjob_data.json
+
 # next.js build output
 .next
 

@@ -27,6 +27,15 @@ const ic_octave_timeout     = 5000; // time in ms
 var illegal_read = fs.readFileSync(util.format('%s/illegal_phrases', ic_octave_folder), 'utf8');
 const illegal_use_regexp = new RegExp('(' + illegal_read.replace(/\n/g, ')|(') + ')');
 
+var cronjob_data_file = "./storage/cronjob_data.json";
+// Create an empty JSON file if the file isn't present
+if (!fs.existsSync(cronjob_data_file)) {
+    let result = {};
+    fs.writeFileSync(cronjob_data_file, JSON.stringify({}));
+} // Now read in the file
+var cronjob_data = JSON.parse(fs.readFileSync(cronjob_data_file, 'utf8'));
+
+
 function shuffle(a) {
     var j, x, i;
     for (i = a.length - 1; i > 0; i--) {
@@ -200,14 +209,39 @@ const render = async function (msg, filename, view = {}, opts = {}, deleteMsg = 
  */
 const router = [
 	{
-		regexp: /^!run/,
+		regexp: /^!run[\s`]/,
 		use: function(msg, tokens) {
+            console.log(msg);
 		  if(msg.guild === null) {
 	              msg.channel.send("Use of in chat MATLAB is not allowed in DM's.  Please visit the main channel.");
 	              return;
 	          }
 		}
-	},
+	}, {
+        
+        // Will take the last posted message and run any code found within a code block (wrapped in backticks ```)
+        regexp: /^!runcode$/,
+        use: function(msg) {
+            msg.channel.fetchMessages({limit: 2})
+            .then(msgMap => {
+                let _old_msgs = Array.from(msgMap.values());
+                let codeMsg = _old_msgs[1];
+
+                let codeSearchRegexp = /```(?:matlab)?((\w|\s|\S)*)(?:```)/;
+                let codeSearchTokens = codeMsg.content.match(codeSearchRegexp);
+                if(codeSearchTokens == null) { // couldn't find a match
+                    msg.channel.send("Message doesn't contain a valid code formatting block. (Wrapped in \`\`\`)");
+                    return;
+                }
+                let codeToRun = codeSearchTokens[1];
+                let run_command = util.format("!run```matlab\n%s```", codeToRun);
+                // Run the code, then delete message immediately
+                msg.channel.send(run_command).then(msg => msg.delete(20).catch(console.error));
+            })
+            .catch(err => console.error(err));
+
+        }
+    },
 	
 	
 	{
@@ -714,23 +748,41 @@ client.login(process.env.BOT_TOKEN).then(initCronjobs);
  */
 function initCronjobs() {
     for (let cronjob of cronjobs) {
+
+        // Check if this cronjob type has a reference in the data JSON, if not, add a blank value
+        if(!cronjob_data.hasOwnProperty(cronjob.name)) {
+            cronjob_data[cronjob.name]  = {entry: {title: ''}};
+        }
+
+
         cronjob.use()
             .then(entry => {
-                cronjob.entry = entry;
+
                 cronjob.last_checked = new Date();
-                // On boot, submit the news one time
-                client.channels.get(process.env.NEWS_CHANNEL_ID).send(mustache.render(templates[cronjob.template], {result: entry}));
+                if(cronjob_data[cronjob.name].entry.title != entry.title) {
+                    // record the entry to the data json
+                    cronjob_data[cronjob.name].entry = entry;
+
+                    // On boot, submit the news if it's..... new 
+                    client.channels.get(process.env.NEWS_CHANNEL_ID).send(mustache.render(templates[cronjob.template], {result: entry}));
+                }
+
                 // Run cronjob
                 setInterval(() => {
                     cronjob.use()
                         .then(entry => {
                             cronjob.last_checked = new Date();
                             // The latest entry hasn't changed, just return out
-                            if (entry.title === cronjob.entry.title) {
+                            // if (entry.title === cronjob.entry.title) {
+                            if (entry.title == cronjob_data[cronjob.name].entry.title) {
                                 return;
                             }
+                            cronjob.data.entry = entry;
                             // Update with the newest entry and post to discord
                             cronjob.entry = entry;
+                            // Write the cronjob data file out to update the last news IDS
+    		                fs.writeFileSync(cronjob_data_file, JSON.stringify(cronjob_data))
+                            // Send the news 
                             client.channels.get(process.env.NEWS_CHANNEL_ID).send(mustache.render(templates[cronjob.template], {result: entry}));
                         })
                         .catch(error => {
@@ -740,6 +792,10 @@ function initCronjobs() {
                             }
                         });
                 }, cronjob.interval);
+
+                // Write the cronjob data file out to update the last news IDS
+    		    fs.writeFileSync(cronjob_data_file, JSON.stringify(cronjob_data))
+
             })
             .catch(error => {
                 if (error) {
