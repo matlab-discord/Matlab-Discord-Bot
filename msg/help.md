@@ -14,6 +14,8 @@
 
 !done : Clear a help channel of its busy status. (exit, answered, close)
 
+!execute : Run code through MATLAB found in a codeblock within the last 5 messages.
+
 !google <message> : lmgtfy the last message sent, or the <message> supplied.
 
 !help : Display this help message!

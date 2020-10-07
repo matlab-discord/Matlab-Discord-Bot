@@ -233,7 +233,7 @@ const router = [
                 for(var i = 0; i < _old_msgs.length; i++) {
 
                     let codeMsg = _old_msgs[i]; // check the message
-                    let codeSearchRegexp = /```(?:matlab)?((\w|\s|\S)*)(?:```)/;
+                    let codeSearchRegexp = /```(?:matlab)?(?:\nmatlab)?((\w|\s|\S)*)(?:```)/; // regexp to parse user code between code blocks
                     let codeSearchTokens = codeMsg.content.match(codeSearchRegexp);
                     // Couldn't find a match.  move onto the next message (if there is one) or break out with error message
                     if(codeSearchTokens == null) { // couldn't find a match
