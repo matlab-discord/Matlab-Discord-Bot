@@ -159,13 +159,13 @@ const cronjobs = [
     {
         name: 'Blog',
         use: getNewestBlogEntry,
-        interval: 5 * 3600 * 1e3,
+        interval: 3 * 3600 * 1e3,
         template: 'blog.md',
         errors: []
     }, {
         name: 'Twitter',
         use: getNewestTweet,
-        interval: 2 * 3600 * 1e3,
+        interval: 1 * 3600 * 1e3,
         template: 'twitter.md',
         errors: []
     }, {
@@ -211,7 +211,6 @@ const router = [
 	{
 		regexp: /^!run[\s`]/,
 		use: function(msg, tokens) {
-            console.log(msg);
 		  if(msg.guild === null) {
 	              msg.channel.send("Use of in chat MATLAB is not allowed in DM's.  Please visit the main channel.");
 	              return;
@@ -220,13 +219,15 @@ const router = [
 	}, {
         
         // Will take the last posted message and run any code found within a code block (wrapped in backticks ```)
-        regexp: /^!execute$/,
+        regexp: /^!eval(?:uate)?$/,
         use: function(msg) {
-            msg.channel.fetchMessages({limit: 6})
+            // Define the number of messages the eval call will search back
+            const MSG_SEARCH_LIM = 10;
+            msg.channel.fetchMessages({limit: MSG_SEARCH_LIM+1}) // +1 because we account for the message that called the eval...
             .then(msgMap => {
                 let _old_msgs = Array.from(msgMap.values());
 
-                // Remove the first message (this is the message that called the execute)
+                // Remove the first message (this is the message that called the eval)
                 _old_msgs.splice(0,1);
 
                 // Loop through the messages from newest to oldest, find a valid code block
@@ -788,7 +789,7 @@ function initCronjobs() {
                             if (entry.title == cronjob_data[cronjob.name].entry.title) {
                                 return;
                             }
-                            cronjob.data.entry = entry;
+                            cronjob_data[cronjob.name].entry = entry;
                             // Update with the newest entry and post to discord
                             cronjob.entry = entry;
                             // Write the cronjob data file out to update the last news IDS

@@ -14,7 +14,7 @@
 
 !done : Clear a help channel of its busy status. (exit, answered, close)
 
-!execute : Run code through MATLAB found in a codeblock within the last 5 messages.
+!eval : Run code through MATLAB found in a codeblock within the last 5 messages. (evaluate)
 
 !google <message> : lmgtfy the last message sent, or the <message> supplied.
 
@@ -32,7 +32,7 @@
 
 !octhelp : Instructions for how to utilize Octave in chat.
 
-!slonramp : Display the SImulink onramp message suggestion and fetch link.
+!slonramp : Display the Simulink onramp message suggestion and fetch link.
 
 !why : Answer to all questions.
 ```
