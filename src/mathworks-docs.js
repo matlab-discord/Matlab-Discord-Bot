@@ -3,7 +3,7 @@ const request = require('request-promise');
 const http = require("https");
 
 async function searchDocs(query) {
-    const queryURL = 'https://mathworks.com/help/search/suggest/doccenter/en/R2020b?q=' + query;
+    const queryURL = 'https://mathworks.com/help/search/suggest/doccenter/en/R2021a?q=' + query;
     const d = await fetch(queryURL, 'json');
     const suggestion = d.pages[0].suggestions[0];
     return {
