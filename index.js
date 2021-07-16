@@ -626,6 +626,12 @@ const router = [
         // Render the message with arguments
         render(msg, command + '.md', {query: command}, opts, delete_msg);
     }
+}, {
+    regexp: /^!askgood\s*(.*)$/,   // "!askgood @user" shows some asking tips and pings the user
+    use: function (msg, tokens) {
+        const username = tokens[2].trim ;
+        render(msg, 'askgood.md', {username});
+    }
 }];
 
 /*
