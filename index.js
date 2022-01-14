@@ -2,12 +2,9 @@ require('dotenv').config();
 const fs        = require('fs');
 const { Client, Collection, Intents } = require('discord.js');
 const deploy_commands = require('./deploy-commands');
+const initCronjobs = require('./src/cronjobs')
 
 // const mustache  = require('mustache');
-// const {searchDocs, getNewestBlogEntry, getNewestTweet, getNewestVideo} = require('./src/mathworks-docs');
-// const why   = require('./src/why');
-// const roll  = require('./src/roll');
-// const latex = require('./src/latex');
 // const exec  = require('child_process').exec; // for sys calls
 // const execSync  = require('child_process').execSync; // for synchronous sys calls
 // const request = require('request');
@@ -37,7 +34,12 @@ for (const file of eventFiles) {
 		client.on(event.name, async (...args) => await event.execute(client, ...args));
 	}
 }
-client.login(process.env.BOT_TOKEN).then();
+
+client.login(process.env.BOT_TOKEN).then(initCronjobs);
+
+/*
+ * Jobs which are going to be executed every interval (in ms).
+ */
 
 
 // client.on('ready', () => {
@@ -59,7 +61,7 @@ client.login(process.env.BOT_TOKEN).then();
 // });
 
 
-// client.login(process.env.BOT_TOKEN).then(initCronjobs);
+
 
 /*
  * Function to initialize cronjobs and start the interval.
@@ -219,14 +221,6 @@ client.login(process.env.BOT_TOKEN).then();
 
 
 
-// //  Function to download images easily
-// const download = function(uri, filename, callback){
-//     request.head(uri, function(err, res, body){
-  
-//       request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
-//     });
-//   };
-
 // // Write message to log file.  appends new line 
 // const writeLog = function(logMsg, logType) {
 //     // Open a write stream for the log file. Append to the end
@@ -265,30 +259,7 @@ client.login(process.env.BOT_TOKEN).then();
 //     }
 // }
 
-// /*
-//  * Jobs which are going to be executed every interval (in ms).
-//  */
-// const cronjobs = [
-//     {
-//         name: 'Blog',
-//         use: getNewestBlogEntry,
-//         interval: 3 * 3600 * 1e3,
-//         template: 'blog.md',
-//         errors: []
-//     }, {
-//         name: 'Twitter',
-//         use: getNewestTweet,
-//         interval: 1 * 3600 * 1e3,
-//         template: 'twitter.md',
-//         errors: []
-//     }, {
-//         name: 'Youtube',
-//         use: getNewestVideo,
-//         interval: 2 * 3600 * 1e3,
-//         template: 'youtube.md',
-//         errors: []
-//     }
-// ];
+
 
 // /*
 //  * Object which is a map of command message id -> sent message id
@@ -834,22 +805,4 @@ client.login(process.env.BOT_TOKEN).then();
 //         }
 //     }
 // });
-
-// // Send an intro message to new channel members
-// client.on('guildMemberAdd', member => {
-//     if (['true', '1'].includes(process.env.DM_INTRO.toLowerCase())) {
-//         member.send(mustache.render(templates['intro.md'], {}));
-//     }
-// });
-
-/*
-client.on('channelPinsUpdate', (channel, time) => {
-    // Log the newest message (but it's also the newest message if you unpin!)
-    channel.fetchPinnedMessages().then(msgs => {
-        let iterator = msgs.entries();
-        let msg = iterator.next().value[1];
-        console.log(msg);
-    });
-});
-*/
 
