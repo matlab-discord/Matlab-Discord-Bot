@@ -1,1 +1,0 @@
-Rolled {{{rolled}}} out of {{{number}}}.
