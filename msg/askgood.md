@@ -1,6 +1,4 @@
-Hey {{{username}}}
-
-Matlab is a high level prototyping language and it's users prefer to work efficiently. To maximise the changes of getting your question answered, make sure to make it as easy as you possible for the people who want to help you.
+Matlab is a high level prototyping language and its users prefer to work efficiently. To maximise the changes of getting your question answered, make sure to make it as easy as you possible for the people who want to help you.
 Follow these tips for the best chance and good advice quickly:
 
 1) Post your question with as much detail as possible.
