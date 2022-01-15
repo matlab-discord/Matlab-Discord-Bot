@@ -1,7 +1,7 @@
 const fs = require("fs");
 const mustache  = require('mustache');
 const templates = require('../src/templates');
-const {searchDocs, getNewestBlogEntry, getNewestTweet, getNewestVideo} = require('./src/mathworks-docs');
+const {searchDocs, getNewestBlogEntry, getNewestTweet, getNewestVideo} = require('./mathworks-docs');
 
 
 let cronjob_data_file = "./storage/cronjob_data.json";
