@@ -11,8 +11,8 @@ See [help.md](https://github.com/matlab-discord/Matlab-Discord-Bot/blob/master/m
 2. Create a new copy of the `.env.example` file and rename it to `.env` in the root directory.
 2. Fill in each one of the environment variables in your new `.env` file.
 
-    - ### Environment Variables
-        `BOT_TOKEN` - Discord Client Secret token from the [Developer Portal](https://discord.com/developers/applications/) when you create a new application.
+    - #### Environment Variables
+        `BOT_TOKEN` - Discord Client Secret token from the [Developer Portal](https://discord.com/developers/applications/) for your bot application.
 
         `NEWS_CHANNEL_ID` - Discord channel ID for newest MathWorks blog posts and videos. This can be left blank.
 
@@ -48,16 +48,17 @@ The following libraries have been used:
 
 - Slash commands can be created in `./commands` using the format below.
    ```js
-   const { SlashCommandBuilder } = require('@discordjs/builders');
+     const { SlashCommandBuilder } = require('@discordjs/builders');
    
-   module.exports = {
-       data: new SlashCommandBuilder()
-           .setName('COMMAND_NAME')
-           .setDescription('COMMAND_DESCRIPTION'),
-       async execute(client, interaction) {
-           // Command behavior
-       },
-   };
-   ```
-- The bot responds to commands with rendered messages. The templates for these messages are in the [msg](https://github.com/matlab-discord/Matlab-Discord-Bot/tree/master/msg) directory.
+     module.exports = {
+         data: new SlashCommandBuilder()
+             .setName('COMMAND_NAME')
+             .setDescription('COMMAND_DESCRIPTION'),
+         async execute(client, interaction) {
+             // Command behavior
+         },
+     };
+     ```
+  
+- The bot responds to commands with rendered messages. The templates for these messages are in the [msg](https://github.com/matlab-discord/Matlab-Discord-Bot/tree/master/msg) directory. These markdown files can be changed to change the messages that the bot sends. 
 
