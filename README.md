@@ -7,33 +7,40 @@ See [help.md](https://github.com/matlab-discord/Matlab-Discord-Bot/blob/master/m
 
 ## Installation
 
-Clone this repository (either to your PC or a host). Create a file called `.env` in the root directory, where the token of the bot has to be posted:
+1. Clone this repository (either to your PC or a host).
+2. Create a new copy of the `.env.example` file and rename it to `.env` in the root directory.
+2. Fill in each one of the environment variables in your new `.env` file.
 
-```
-BOT_TOKEN=<your token here>
-NEWS_CHANNEL_ID=<channel ID>                   # The discord chanenl ID for newest MathWorks blog posts and videos. Can leave blank.
-DM_INTRO=<0 or 1>                              # If true (1) bot will send an intro message to new users who join the server.
-YOUTUBE_AUTH_KEY=<Youtube authentication key>  # The Youtube authentication key used in the Youtube data api v3 for getting the last 
-                                                 youtube video published on the MATLAB channel.
-TWITTER_BEARER_TOKEN=<Bearer Token>            # Twitter API OAuth 2.0 Bearer authorization token used for tweet pulling
-OWNER_ID=<Discord ID of owner>                 # The ID for the owner of the bot (You, probably!) for debugging purposes only.  
-```
+    - ### Environment Variables
+        `BOT_TOKEN` - Discord Client Secret token from the [Developer Portal](https://discord.com/developers/applications/) when you create a new application.
 
-Install library dependencies with `npm install`
+        `NEWS_CHANNEL_ID` - Discord channel ID for newest MathWorks blog posts and videos. This can be left blank.
+
+        `DM_INTRO` - Set this boolean value to 1 (true) or 0 (false) to control if the bot sends an intro message to new users who join the server.
+
+        `YOUTUBE_AUTH_KEY` - The Youtube authentication key used in the Youtube data api v3 for getting the last youtube video published on the MATLAB channel.
+
+        `TWITTER_BEARER_TOKEN` - Twitter API OAuth 2.0 Bearer authorization token used for tweet pulling
+
+        `OWNER_ID` - The user ID for the owner of the bot (You, probably!) for debugging purposes only.
+
+        `GUILD_ID` - This is the "test" guild which commands are immediately registered to. Due to slash command registration, if the test guild is not listed here it will take about 1 hour for Discord to register the command globally.
+
+        `BOT_ID` - The user ID of the bot. This is listed in the [Developer Portal](https://discord.com/developers/applications/) as "Application ID".
+
+4. Install library dependencies with `npm install`.
 The following libraries have been used:
+    * [cheerio](https://github.com/cheeriojs/cheerio)
+    * [discord.js](https://github.com/discordjs/discord.js/)
+    * [dotenv](https://github.com/motdotla/dotenv)
+    * [mustache.js](https://github.com/janl/mustache.js/)
+    * [request](https://github.com/request/request)
+    * [request-promise](https://github.com/request/request-promise)
 
-* [cheerio](https://github.com/cheeriojs/cheerio)
-* [discord.js](https://github.com/discordjs/discord.js/)
-* [dotenv](https://github.com/motdotla/dotenv)
-* [mustache.js](https://github.com/janl/mustache.js/)
-* [request](https://github.com/request/request)
-* [request-promise](https://github.com/request/request-promise)
-
-Start the bot:
-
-```
-node index.js
-```
+5. Start the bot by running the command
+    ```
+    node index.js
+    ```
 
 ## Structure
 
