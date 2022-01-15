@@ -6,6 +6,6 @@ module.exports = {
         .setName('askgood')
         .setDescription('How to ask a good question'),
     async execute(client, interaction) {
-        await render(interaction, 'askgood.md', {username: interaction.user.displayName});
+        await render(interaction, 'askgood.md', {username: interaction.user.displayName}, {}, true);
     }
 }

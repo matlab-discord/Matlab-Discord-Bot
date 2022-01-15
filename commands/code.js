@@ -6,6 +6,6 @@ module.exports = {
         .setName('code')
         .setDescription('Instructions on how to format code.'),
     async execute(client, interaction) {
-        await render(interaction, 'code.md', {}, {files: ['./img/backtick.png']});
+        await render(interaction, 'code.md', {}, {files: ['./img/backtick.png']}, true);
     }
 }

@@ -6,6 +6,6 @@ module.exports = {
         .setName('ask')
         .setDescription('Don\'t ask to ask, just ask.'),
     async execute(client, interaction) {
-        await render(interaction, 'ask.md');
+        await render(interaction, 'ask.md', {}, {}, true);
     }
 }
