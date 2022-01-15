@@ -1,1 +1,2 @@
-{{{result}}}
+Question: {{{question}}}
+Answer: {{{result}}}
