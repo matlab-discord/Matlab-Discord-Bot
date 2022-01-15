@@ -19,7 +19,7 @@ const renderInter = async function (interaction, filename, view = {}, opts = {},
     }
     if (hiddenSender) {
         let message = {content: mustache.render(templates[filename], view), ...opts}
-        await interaction.channel.send(message)
+        await interaction.channel.send(message).catch(console.log)
         await interaction.reply({content:"Sent", ephemeral: true}).catch(console.log)
     } else {
         let message = {content: mustache.render(templates[filename], view), ...opts}
