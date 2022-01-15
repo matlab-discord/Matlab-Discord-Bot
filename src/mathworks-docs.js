@@ -2,8 +2,21 @@ let fetch = require('./fetch');
 const request = require('request-promise');
 const http = require("https");
 
+async function docAutocomplete(query) {
+    const queryURL = 'https://mathworks.com/help/search/suggest/doccenter/en/R2021b?q=' + encodeURIComponent(query);
+    const d = await fetch(queryURL, 'json');
+    const docSuggestions =
+        d.pages.flatMap(page => {
+            return page.suggestions.map(suggestion => ({
+                name: suggestion.product + ' - ' + suggestion.title.join(""),
+                value: suggestion.path
+            }))
+        });
+    return [... new Set(docSuggestions)];
+}
+
 async function searchDocs(query) {
-    const queryURL = 'https://mathworks.com/help/search/suggest/doccenter/en/R2021b?q=' + query;
+    const queryURL = 'https://mathworks.com/help/search/suggest/doccenter/en/R2021b?q=' + encodeURIComponent(query);
     const d = await fetch(queryURL, 'json');
     const suggestion = d.pages[0].suggestions[0];
     return {
@@ -87,6 +100,7 @@ function parseDate(date) {
 }
 
 module.exports = {
+    docAutocomplete,
     searchDocs,
     getNewestBlogEntry,
     getNewestTweet,
