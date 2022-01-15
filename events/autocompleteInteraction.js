@@ -1,4 +1,3 @@
-const {docAutocomplete} = require("../src/mathworks-docs");
 module.exports = {
     async autocompleteExecute(client, interaction) {
         const command = client.commands.get(interaction.commandName);
