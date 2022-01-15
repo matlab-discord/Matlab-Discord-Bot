@@ -37,16 +37,27 @@ The following libraries have been used:
     * [request](https://github.com/request/request)
     * [request-promise](https://github.com/request/request-promise)
 
-5. Start the bot by running the command
+5. Start the bot by running the following command. (Note: Make sure that you are using **Node 16.6 or greater**.)
     ```
     node index.js
     ```
 
 ## Structure
 
-Once a message is posted, all regular expressions in the `router` will be tested. If a regular expression is triggered, the function provided via `use` will be applied on the message and the `tokens` from the regular expression.
+- Events such as `interactionCreate`, `messageCreate`, and `ready` are located in `./events`.
 
-Usually the bot has to respond with a rendered message. The templates for these messages are in the [msg](https://github.com/matlab-discord/Matlab-Discord-Bot/tree/master/msg) directory.
-
-The last regular expression is chosen in a way, that if no command applies, it will search for a template with the name of the command. This way "static" messages can be provided just by creating the template (e.g. `help.md` and `code.md`).
+- Slash commands can be created in `./commands` using the format below.
+   ```js
+   const { SlashCommandBuilder } = require('@discordjs/builders');
+   
+   module.exports = {
+       data: new SlashCommandBuilder()
+           .setName('COMMAND_NAME')
+           .setDescription('COMMAND_DESCRIPTION'),
+       async execute(client, interaction) {
+           // Command behavior
+       },
+   };
+   ```
+- The bot responds to commands with rendered messages. The templates for these messages are in the [msg](https://github.com/matlab-discord/Matlab-Discord-Bot/tree/master/msg) directory.
 
