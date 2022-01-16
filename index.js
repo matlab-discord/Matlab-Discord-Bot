@@ -1,8 +1,8 @@
 require('dotenv').config();
-const fs        = require('fs');
+const fs = require('fs');
 const { Client, Collection, Intents } = require('discord.js');
-const deploy_commands = require('./deploy-commands');
 const { initCronJobs } = require('./src/cronjobs')
+require('./deploy-commands');
 
 /*
 Set bot intents.
