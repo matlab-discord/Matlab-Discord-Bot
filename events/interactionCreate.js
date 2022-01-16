@@ -1,11 +1,11 @@
-const {buttonExecute} = require("./buttonInteraction");
-const {autocompleteExecute} = require("./autocompleteInteraction");
-const {slashExecute} = require("./slashInteraction");
+const { buttonExecute } = require('./buttonInteraction');
+const { autocompleteExecute } = require('./autocompleteInteraction');
+const { slashExecute } = require('./slashInteraction');
 
 module.exports = {
-	name: 'interactionCreate',
-	async execute(client, interaction) {
-        // Route each interaction type to the proper interaction behavior
+    name: 'interactionCreate',
+    async execute(client, interaction) {
+    // Route each interaction type to the proper interaction behavior
 
         // Slash command interaction
         if (interaction.isCommand()) {
@@ -20,14 +20,12 @@ module.exports = {
             await buttonExecute(client, interaction);
         }
 
-        // if (interaction.isContextMenu()) {
-        //
-        // }
-        //
-        // if (interaction.isSelectMenu()) {
-        //
-        // }
-
-	},
+    // if (interaction.isContextMenu()) {
+    //
+    // }
+    //
+    // if (interaction.isSelectMenu()) {
+    //
+    // }
+    },
 };
-

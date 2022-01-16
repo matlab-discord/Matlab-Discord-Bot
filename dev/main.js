@@ -1,4 +1,3 @@
-
 /*
 const fetch = require('../src/fetch');
 fetch('https://twitter.com/MATLAB').then(function(doc){
@@ -25,4 +24,5 @@ console.log(roll('fuck-1.4e+5f'));
 */
 
 const latex2png = require('../src/latex');
+
 latex2png('\\alpha').then(console.log);

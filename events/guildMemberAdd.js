@@ -1,5 +1,5 @@
-const mustache  = require('mustache');
-const templates = require('../src/templates')
+const mustache = require('mustache');
+const templates = require('../src/templates');
 
 module.exports = {
     name: 'guildMemberAdd',

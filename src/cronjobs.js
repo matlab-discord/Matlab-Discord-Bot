@@ -1,10 +1,9 @@
-const fs = require("fs");
-const mustache  = require('mustache');
-const templates = require('../src/templates');
+const fs = require('fs');
+const mustache = require('mustache');
+const templates = require('./templates');
 const { getNewestBlogEntry, getNewestTweet, getNewestVideo } = require('./mathworks-docs');
 
-
-let cronjob_data_file = "./storage/cronjob_data.json";
+const cronjob_data_file = './storage/cronjob_data.json';
 
 const cronjobs = [
     {
@@ -12,52 +11,48 @@ const cronjobs = [
         use: getNewestBlogEntry,
         interval: 3 * 3600 * 1e3,
         template: 'blog.md',
-        errors: []
+        errors: [],
     }, {
         name: 'Twitter',
         use: getNewestTweet,
         interval: 1 * 3600 * 1e3,
         template: 'twitter.md',
-        errors: []
+        errors: [],
     }, {
         name: 'Youtube',
         use: getNewestVideo,
         interval: 2 * 3600 * 1e3,
         template: 'youtube.md',
-        errors: []
-    }
+        errors: [],
+    },
 ];
 
-let cronjob_data = JSON.parse(fs.readFileSync(cronjob_data_file, 'utf8'));
+const cronjob_data = JSON.parse(fs.readFileSync(cronjob_data_file, 'utf8'));
 
 module.exports = {
     initCronJobs(client) {
-        for (let cronjob of cronjobs) {
-
+        for (const cronjob of cronjobs) {
             // Check if this cronjob type has a reference in the data JSON, if not, add a blank value
-            if(!cronjob_data.hasOwnProperty(cronjob.name)) {
-                cronjob_data[cronjob.name]  = {entry: {title: ''}};
+            if (!cronjob_data.hasOwnProperty(cronjob.name)) {
+                cronjob_data[cronjob.name] = { entry: { title: '' } };
             }
 
-
             cronjob.use()
-                .then(entry => {
-
+                .then((entry) => {
                     cronjob.last_checked = new Date();
-                    if(cronjob_data[cronjob.name].entry.title !== entry.title) {
+                    if (cronjob_data[cronjob.name].entry.title !== entry.title) {
                         // record the entry to the data json
                         cronjob_data[cronjob.name].entry = entry;
 
                         // On boot, submit the news if it's..... new
                         client.channels.fetch(process.env.NEWS_CHANNEL_ID)
-                            .then( channel =>
-                                channel.send(mustache.render(templates[cronjob.template], {result: entry})));
+                            .then((channel) => channel.send(mustache.render(templates[cronjob.template], { result: entry })));
                     }
 
                     // Run cronjob
                     setInterval(() => {
                         cronjob.use()
-                            .then(entry => {
+                            .then((entry) => {
                                 cronjob.last_checked = new Date();
                                 // The latest entry hasn't changed, just return out
                                 // if (entry.title === cronjob.entry.title) {
@@ -68,13 +63,12 @@ module.exports = {
                                 // Update with the newest entry and post to discord
                                 cronjob.entry = entry;
                                 // Write the cronjob data file out to update the last news IDS
-                                fs.writeFileSync(cronjob_data_file, JSON.stringify(cronjob_data))
+                                fs.writeFileSync(cronjob_data_file, JSON.stringify(cronjob_data));
                                 // Send the news
                                 client.channels.fetch(process.env.NEWS_CHANNEL_ID)
-                                    .then( channel =>
-                                    channel.send(mustache.render(templates[cronjob.template], {result: entry})));
+                                    .then((channel) => channel.send(mustache.render(templates[cronjob.template], { result: entry })));
                             })
-                            .catch(error => {
+                            .catch((error) => {
                                 if (error) {
                                     cronjob.errors.push(error);
                                     console.log(error);
@@ -83,13 +77,12 @@ module.exports = {
                     }, cronjob.interval);
 
                     // Write the cronjob data file out to update the last news IDS
-                    fs.writeFileSync(cronjob_data_file, JSON.stringify(cronjob_data))
-
+                    fs.writeFileSync(cronjob_data_file, JSON.stringify(cronjob_data));
                 })
-                .catch(error => {
+                .catch((error) => {
                     cronjob.errors.push(error);
                     console.log(error);
                 });
         }
-    }
-}
+    },
+};

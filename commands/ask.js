@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const {renderInter: render} = require('../src/render');
+const { renderInter: render } = require('../src/render');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -7,5 +7,5 @@ module.exports = {
         .setDescription('Don\'t ask to ask, just ask.'),
     async execute(client, interaction) {
         await render(interaction, 'ask.md', {}, {}, true);
-    }
-}
+    },
+};

@@ -5,19 +5,19 @@ function sample(array) {
 
 function weightedSample(data) {
     // Given a dictionary { object : weight } return a weighted random sample
-    let totalSum = Object.values(data).reduce((a, b) => a+b, 0)
-    let numElements = Object.values(data).length
-    let randNum = Math.random() * totalSum;
+    const totalSum = Object.values(data).reduce((a, b) => a + b, 0);
+    const numElements = Object.values(data).length;
+    const randNum = Math.random() * totalSum;
     let threshold = 0;
     for (let i = 0; i < numElements; i++) {
         threshold += parseFloat(Object.values(data)[i]);
         if (threshold > randNum) {
-            return Object.keys(data)[i]
+            return Object.keys(data)[i];
         }
     }
 }
 
-let specialCase = () => sample(
+const specialCase = () => sample(
     [
         'why not?',
         'don\'t ask!',
@@ -30,61 +30,61 @@ let specialCase = () => sample(
         'the computer did it.',
         'the customer is always right.',
         'in the beginning, God created the heavens and the earth...',
-        'don\'t you have something better to do?'
-    ]
+        'don\'t you have something better to do?',
+    ],
 );
 
-let properNoun = () => sample(
-    ['Cleve', 'Jack', 'Bill', 'Joe', 'Pete', 'Loren', 'Damian', 'Barney', 'Nausheen', 'Mary Ann', 'Penny', 'Mara']
+const properNoun = () => sample(
+    ['Cleve', 'Jack', 'Bill', 'Joe', 'Pete', 'Loren', 'Damian', 'Barney', 'Nausheen', 'Mary Ann', 'Penny', 'Mara'],
 );
 
-let noun = () => sample(
-    ['mathematician', 'programmer', 'system manager', 'engineer', 'hamster', 'kid']
+const noun = () => sample(
+    ['mathematician', 'programmer', 'system manager', 'engineer', 'hamster', 'kid'],
 );
 
-let nounedVerb = () => sample(['love', 'approval']);
+const nounedVerb = () => sample(['love', 'approval']);
 
-let adjective = () => sample(['tall', 'bald', 'young', 'smart', 'rich', 'terrified', 'good']);
+const adjective = () => sample(['tall', 'bald', 'young', 'smart', 'rich', 'terrified', 'good']);
 
-let presentVerb = () => sample(['fool', 'please', 'satisfy']);
-let transitiveVerb = () => sample(['threatened', 'told', 'asked', 'helped', 'obeyed']);
-let intransitiveVerb = () => sample(['insisted on it', 'suggested it', 'told me to', 'wanted it', 'knew it was a good idea', 'wanted it that way']);
+const presentVerb = () => sample(['fool', 'please', 'satisfy']);
+const transitiveVerb = () => sample(['threatened', 'told', 'asked', 'helped', 'obeyed']);
+const intransitiveVerb = () => sample(['insisted on it', 'suggested it', 'told me to', 'wanted it', 'knew it was a good idea', 'wanted it that way']);
 
-let article = () => sample(['the', 'some', 'a']);
-let nominativePronoun = () => sample(['I', 'you', 'he', 'she', 'they']);
-let accusativePronoun = () => sample(['me', 'all', 'her', 'him']);
+const article = () => sample(['the', 'some', 'a']);
+const nominativePronoun = () => sample(['I', 'you', 'he', 'she', 'they']);
+const accusativePronoun = () => sample(['me', 'all', 'her', 'him']);
 
-let preposition = () => sample(['of', 'from']);
-let adverb = () => sample(['very', 'not very', 'not excessively']);
+const preposition = () => sample(['of', 'from']);
+const adverb = () => sample(['very', 'not very', 'not excessively']);
 
-let phrase = () => sample( [
+const phrase = () => sample([
     `for the ${nounedVerb()} ${prepositionalPhrase()}.`,
     `to ${presentVerb()} ${object()}.`,
-    `because ${sentence()}`
+    `because ${sentence()}`,
 ]);
 
 let prepositionalPhrase = () => sample([
     `${preposition()} ${article()} ${nounPhrase()}`,
     `${preposition()} ${properNoun()}`,
-    `${preposition()} ${accusativePronoun()}`
+    `${preposition()} ${accusativePronoun()}`,
 ]);
 
 let sentence = () => `${subject()} ${predicate()}.`;
 
 let subject = () => weightedSample({
-    [properNoun()] : 1,
-    [nominativePronoun()] : 1,
-    [`${article()} ${nounPhrase()}`] : 2
+    [properNoun()]: 1,
+    [nominativePronoun()]: 1,
+    [`${article()} ${nounPhrase()}`]: 2,
 });
 
 let object = () => weightedSample({
-    [accusativePronoun()] : 1,
-    [`${article()} ${nounPhrase()}`] : 9
+    [accusativePronoun()]: 1,
+    [`${article()} ${nounPhrase()}`]: 9,
 });
 
 let predicate = () => weightedSample({
-    [`${transitiveVerb()} ${object()}`] : 1,
-    [intransitiveVerb()] : 2
+    [`${transitiveVerb()} ${object()}`]: 1,
+    [intransitiveVerb()]: 2,
 });
 
 /*
@@ -109,39 +109,39 @@ const randi = (n) => Math.round((n - 1) * Math.random()) + 1;
 function nounPhrase() {
     let a;
     switch (randi(4)) {
-        case 1:
-            a = noun();
-            break;
-        case 2:
-            a = [adjectivePhrase(), ' ', nounPhrase()].join('');
-            break;
-        default:
-            a = [adjectivePhrase(), ' ', noun()].join('');
-            break;
+    case 1:
+        a = noun();
+        break;
+    case 2:
+        a = [adjectivePhrase(), ' ', nounPhrase()].join('');
+        break;
+    default:
+        a = [adjectivePhrase(), ' ', noun()].join('');
+        break;
     }
     return a;
 }
 function adjectivePhrase() {
     let a;
     switch (randi(6)) {
-        case 1:
-        case 2:
-        case 3:
-            a = adjective();
-            break;
-        case 4:
-        case 5:
-            a = [adjectivePhrase(), ' and ', adjectivePhrase()].join('');
-            break;
-        case 6:
-            a = [adverb(), ' ', adjective()].join('');
+    case 1:
+    case 2:
+    case 3:
+        a = adjective();
+        break;
+    case 4:
+    case 5:
+        a = [adjectivePhrase(), ' and ', adjectivePhrase()].join('');
+        break;
+    case 6:
+        a = [adverb(), ' ', adjective()].join('');
     }
     return a;
 }
 
-let why = () => {
-    let whyResult = weightedSample({[specialCase()]: 1, [phrase()]: 3, [sentence()]: 6})
-    return whyResult[0].toUpperCase() + whyResult.substr(1)
-}
+const why = () => {
+    const whyResult = weightedSample({ [specialCase()]: 1, [phrase()]: 3, [sentence()]: 6 });
+    return whyResult[0].toUpperCase() + whyResult.substr(1);
+};
 
 module.exports = why;

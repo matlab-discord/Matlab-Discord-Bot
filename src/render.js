@@ -1,33 +1,33 @@
-const mustache  = require('mustache');
-const templates = require('../src/templates')
+const mustache = require('mustache');
+const templates = require('./templates');
 
 const renderMsg = async function (msg, filename, view = {}, opts = {}, deleteMsg = false) {
     if (templates[filename] === undefined) {
-        return
+        return;
     }
     const sent = await msg.channel.send(mustache.render(templates[filename], view), opts).catch(console.log);
     if (sent !== undefined) {
-    if (deleteMsg) {
-        msg.delete(20).catch(console.error);
-    }
+        if (deleteMsg) {
+            msg.delete(20).catch(console.error);
+        }
     }
 };
 
 const renderInter = async function (interaction, filename, view = {}, opts = {}, hiddenSender = false) {
     if (templates[filename] === undefined) {
-        return
+        return;
     }
     if (hiddenSender) {
-        let message = {content: mustache.render(templates[filename], view), ...opts}
-        await interaction.channel.send(message).catch(console.log)
-        await interaction.reply({content:"Sent anonymously.", ephemeral: true}).catch(console.log)
+        const message = { content: mustache.render(templates[filename], view), ...opts };
+        await interaction.channel.send(message).catch(console.log);
+        await interaction.reply({ content: 'Sent anonymously.', ephemeral: true }).catch(console.log);
     } else {
-        let message = {content: mustache.render(templates[filename], view), ...opts}
+        const message = { content: mustache.render(templates[filename], view), ...opts };
         await interaction.reply(message).catch(console.log);
     }
 };
 
 module.exports = {
     renderMsg,
-    renderInter
+    renderInter,
 };

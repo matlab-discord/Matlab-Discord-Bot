@@ -1,7 +1,7 @@
 require('dotenv').config();
 const fs = require('fs');
 const { Client, Collection, Intents } = require('discord.js');
-const { initCronJobs } = require('./src/cronjobs')
+const { initCronJobs } = require('./src/cronjobs');
 require('./deploy-commands');
 
 /*
@@ -16,32 +16,32 @@ const client = new Client({ partials: ['CHANNEL'], intents: myIntents });
 Import in bot commands
  */
 client.commands = new Collection();
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync('./commands').filter((file) => file.endsWith('.js'));
 
 for (const file of commandFiles) {
-	const command = require(`./commands/${file}`);
-	client.commands.set(command.data.name, command);
+    const command = require(`./commands/${file}`);
+    client.commands.set(command.data.name, command);
 }
 
 /*
 Import in bot events
  */
-const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
+const eventFiles = fs.readdirSync('./events').filter((file) => file.endsWith('.js'));
 
 for (const file of eventFiles) {
-	const event = require(`./events/${file}`);
-	if (event.once) {
-		client.once(event.name, (...args) => event.execute(client, ...args));
-	} else {
-		client.on(event.name, async (...args) => await event.execute(client, ...args));
-	}
+    const event = require(`./events/${file}`);
+    if (event.once) {
+        client.once(event.name, (...args) => event.execute(client, ...args));
+    } else {
+        client.on(event.name, async (...args) => await event.execute(client, ...args));
+    }
 }
 
 /*
 Save bot channel ids
  */
-client.help_channel_ids    = JSON.parse(process.env.HELP_CHANNEL_IDS);
-client.help_channel_names  = JSON.parse(process.env.HELP_CHANNEL_NAMES);
+client.help_channel_ids = JSON.parse(process.env.HELP_CHANNEL_IDS);
+client.help_channel_names = JSON.parse(process.env.HELP_CHANNEL_NAMES);
 client.help_channel_timers = Array(client.help_channel_ids.length).fill(null);
 
 const clientCronJobs = () => initCronJobs(client);
@@ -50,18 +50,6 @@ client.login(process.env.BOT_TOKEN).then(clientCronJobs);
 
 // // Define some universal constants
 // const lengthMaxBotMessages = 1000; // max message length
-
-// // Define the path variables for inchat octave
-// const ic_octave_folder      = './inchat_octave';
-// const ic_octave_workspaces  = util.format('%s/workspaces', ic_octave_folder);
-// const ic_octave_out_file    = util.format('%s/bot_out.txt', ic_octave_folder);
-// const ic_octave_user_code   = util.format('%s/user_code.m', ic_octave_folder);
-// const ic_octave_printout    = util.format('%s/user_printout.png', ic_octave_folder);
-// const ic_octave_timeout     = 5000; // time in ms
-
-// // Load in illegal use functions for inchat octave and compile them as a regexp
-// var illegal_read = fs.readFileSync(util.format('%s/illegal_phrases', ic_octave_folder), 'utf8');
-// const illegal_use_regexp = new RegExp('(' + illegal_read.replace(/\n/g, ')|(') + ')');
 
 // /*
 //  * Router for all commands detected via regexp.
@@ -76,7 +64,7 @@ client.login(process.env.BOT_TOKEN).then(clientCronJobs);
 // 	          }
 // 		}
 // 	}, {
-        
+
 //         // Will take the last posted message and run any code found within a code block (wrapped in backticks ```)
 //         regexp: /^!eval(?:uate)?$/,
 //         use: function(msg) {
@@ -113,8 +101,7 @@ client.login(process.env.BOT_TOKEN).then(clientCronJobs);
 //             .catch(err => console.error(err));
 //         }
 //     },
-	
-	
+
 // 	{
 //     // Inchat octave (remove h for octhelp message)
 //     regexp: /^!((?:oct(?=[^h]))|(?:opr)|(?:oup)|(?:orun))/,
@@ -130,7 +117,7 @@ client.login(process.env.BOT_TOKEN).then(clientCronJobs);
 //         // Figure out the workspace filename for this user
 //         var user_id = util.format('%s#%d', msg.author.username, msg.author.discriminator);
 //         var user_work_file  = util.format('%s/%s.mat', ic_octave_workspaces, user_id);
-                    
+
 //         // Grab the octave operation that the user called
 //         var operation = tokens[1];
 
@@ -163,7 +150,7 @@ client.login(process.env.BOT_TOKEN).then(clientCronJobs);
 //                         console.log(err);
 //                         msg.channel.send('Something went wrong. <@' + process.env.OWNER_ID + '>');
 //                         return;
-//                     }   
+//                     }
 
 //                     // Format system call for octave CLI
 //                     var cmd_format = util.format(`addpath('%s'); bot_runner('%s', '%s')`, ic_octave_folder, ic_octave_out_file, user_work_file);
@@ -188,7 +175,7 @@ client.login(process.env.BOT_TOKEN).then(clientCronJobs);
 //                                     if(msg_out.length >= lengthMaxBotMessages) {
 //                                         msg.channel.send("Command executed, but output is too long to display.");
 //                                     } else {
-//                                         if(operation === 'orun') { // special case to post non formatted 
+//                                         if(operation === 'orun') { // special case to post non formatted
 //                                             msg.channel.send(util.format("%s",data));
 //                                         }
 //                                         else {
@@ -199,7 +186,7 @@ client.login(process.env.BOT_TOKEN).then(clientCronJobs);
 //                             });
 //                         }
 //                     });
-//                 }); 
+//                 });
 //                 break;
 
 //             // Octave Print.  Print the current users graphic figure saved in the workspace to chat
@@ -230,7 +217,7 @@ client.login(process.env.BOT_TOKEN).then(clientCronJobs);
 //                     msg.channel.send("Nothing was uploaded.");
 //                     return;
 //                 }
-                
+
 //                 // Valid image type extensions
 //                 var valid_filetypes_regexp = /.*\.((?:mat)|(?:png)|(?:jpe?g)|(?:gif)|(?:tif{1,2}))/;
 
@@ -250,7 +237,7 @@ client.login(process.env.BOT_TOKEN).then(clientCronJobs);
 //                             filetype = "data";
 //                         break;
 
-//                     default: 
+//                     default:
 //                             filetype = "image";
 //                         break;
 //                 }
@@ -291,8 +278,6 @@ client.login(process.env.BOT_TOKEN).then(clientCronJobs);
 //                 //nothing
 //                 break;
 //         }
-
-       
 
 //     } // end function
 // }, {
@@ -336,7 +321,7 @@ client.login(process.env.BOT_TOKEN).then(clientCronJobs);
 //         if(help_channel_ids.includes(msg.channel.id)) {
 //             var chan = msg.channel;
 //             var chan_ind = help_channel_ids.indexOf(chan.id);
-    
+
 //             // If the help channel is busy, clear its busy status
 //             if(help_channel_timers[chan_ind] != null) {
 //                 clearTimeout(help_channel_timers[chan_ind]);
@@ -350,7 +335,7 @@ client.login(process.env.BOT_TOKEN).then(clientCronJobs);
 //                 msg.channel.send("Channel is available for another question.")
 //                 msg.delete(20).catch(console.error);
 //             }
-    
+
 //         }
 //         else {
 //             msg.channel.send("Use this command in a help-channel to clear its busy status once a question is complete.")
@@ -360,7 +345,7 @@ client.login(process.env.BOT_TOKEN).then(clientCronJobs);
 //     regexp: /^!(.+?)( .*)?$/, // E.g. any other message, pass-through (like help.md => "!help", "!help interp1", ...)
 //     use: function (msg, tokens) {
 //         const command = tokens[1];
-    
+
 //         // For an extra layer of configurability, some pass-through messages can have options (dont delete message, add file)
 //         var opts = {};
 //         var delete_msg = true;
@@ -369,7 +354,7 @@ client.login(process.env.BOT_TOKEN).then(clientCronJobs);
 //                 // Send keyboard image with code command
 //                 opts = {files: ['./img/backtick_highlight.png']};
 //                 break;
-                
+
 //             case 'jobs':
 //             case 'help':
 //             case 'mathelp':
