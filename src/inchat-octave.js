@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { exec } = require('child_process');
 const util = require('util');
-const request = require('request');
+const download = require('./download')
 
 const lengthMaxBotMessages = 1000; // max message length
 
@@ -16,12 +16,6 @@ const ic_octave_timeout = 5000; // time in ms
 // Load in illegal use functions for inchat octave and compile them as a regexp
 const illegal_read = fs.readFileSync(util.format('%s/illegal_phrases', ic_octave_folder), 'utf8');
 const illegal_use_regexp = new RegExp(`(${illegal_read.replace(/\n/g, ')|(')})`);
-
-const download = function (uri, filename, callback) {
-    request.head(uri, (err, res, body) => {
-        request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
-    });
-};
 
 function octaveRun(msg, operation) {
     // Figure out the workspace filename for this user

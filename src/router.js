@@ -1,5 +1,3 @@
-const request = require('request');
-const fs = require('fs');
 const latex = require('./latex');
 const {
     searchDocs, getNewestBlogEntry, getNewestTweet, getNewestVideo,
@@ -8,12 +6,7 @@ const { renderMsg: render } = require('./render');
 const why = require('./why');
 const buildMinesweeperGrid = require('./minesweeper');
 const icoct = require('./inchat-octave');
-
-const download = function (uri, filename, callback) {
-    request.head(uri, (err, res, body) => {
-        request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
-    });
-};
+const download = require('./download');
 
 const router = [
     {
@@ -76,17 +69,17 @@ const router = [
             searchDocs(query)
                 .then((result) => {
                     result.toolbox = (result.product.toLowerCase() !== 'matlab') ? ` from ${result.product}` : '';
-                    render(msg, 'doc.md', { url: result.url });
+                    render(msg, 'doc.md', { url: result.url }).catch(console.error);
                 })
                 .catch((error) => {
                     if (error) {
-                        render(msg, 'doc_error.md', { error, query });
+                        render(msg, 'doc_error.md', { error, query }).catch(console.error);
                     }
                 });
         },
     },
     {
-        regexp: /[[!$](?:`+)((?:[\s\S.])*[^`])(?:`+)$/, // Latex parser
+        regexp: /[[!$]`+([\s\S.]*[^`])`+$/, // Latex parser
         use(msg, tokens) {
             const query = tokens[1].trim();
             latex(query).then((imgUrl) => {
@@ -108,11 +101,11 @@ const router = [
         use(msg) {
             getNewestBlogEntry()
                 .then((result) => {
-                    render(msg, 'blog.md', { result });
+                    render(msg, 'blog.md', { result }).catch(console.error);
                 })
                 .catch((error) => {
                     if (error) {
-                        render(msg, 'blog_error.md', { error });
+                        render(msg, 'blog_error.md', { error }).catch(console.error);
                     }
                 });
         },
@@ -151,7 +144,7 @@ const router = [
         regexp: /((''')|('''matlab))[\S\s.]*'''/,
         use(msg) {
             const opts = { files: ['./img/backtick_highlight.png'] };
-            render(msg, 'code.md', { query: 'code' }, opts, false);
+            render(msg, 'code.md', { query: 'code' }, opts, false).catch(console.error);
         },
     },
     {
@@ -159,11 +152,11 @@ const router = [
         use(msg) {
             getNewestVideo(process.env.YOUTUBE_AUTH_KEY)
                 .then((result) => {
-                    render(msg, 'youtube.md', { result });
+                    render(msg, 'youtube.md', { result }).catch(console.error);
                 })
                 .catch((error) => {
                     if (error) {
-                        render(msg, 'youtube_error.md', { error });
+                        render(msg, 'youtube_error.md', { error }).catch(console.error);
                     }
                 });
         },
@@ -173,11 +166,11 @@ const router = [
         use(msg) {
             getNewestTweet()
                 .then((result) => {
-                    render(msg, 'twitter.md', { result });
+                    render(msg, 'twitter.md', { result }).catch(console.error);
                 })
                 .catch((error) => {
                     if (error) {
-                        render(msg, 'twitter_error.md', { error });
+                        render(msg, 'twitter_error.md', { error }).catch(console.error);
                     }
                 });
         },
@@ -187,7 +180,7 @@ const router = [
         use(msg) {
             render(msg, 'why.md', {
                 result: why(),
-            });
+            }).catch(console.error);
         },
     },
     {
@@ -241,14 +234,14 @@ const router = [
             } // end switch
 
             // Render the message with arguments
-            render(msg, `${command}.md`, { query: command }, opts, delete_msg);
+            render(msg, `${command}.md`, { query: command }, opts, delete_msg).catch(console.error);
         },
     },
     {
         regexp: /^!askgood\s*(.*)$/, // "!askgood @user" shows some asking tips and pings the user
         use(msg, tokens) {
             const username = tokens[2].trim;
-            render(msg, 'askgood.md', { username });
+            render(msg, 'askgood.md', { username }).catch(console.error);
         },
     }];
 

@@ -1,13 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const request = require('request');
-const fs = require('fs');
 const latex = require('../src/latex');
-
-const download = function (uri, filename, callback) {
-    request.head(uri, (err, res, body) => {
-        request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
-    });
-};
+const download = require('../src/download')
 
 module.exports = {
     data: new SlashCommandBuilder()
