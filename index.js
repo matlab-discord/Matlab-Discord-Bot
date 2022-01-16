@@ -2,7 +2,7 @@ require('dotenv').config();
 const fs        = require('fs');
 const { Client, Collection, Intents } = require('discord.js');
 const deploy_commands = require('./deploy-commands');
-const initCronjobs = require('./src/cronjobs')
+const { initCronJobs } = require('./src/cronjobs')
 
 /*
 Set bot intents.
@@ -44,7 +44,9 @@ client.help_channel_ids    = JSON.parse(process.env.HELP_CHANNEL_IDS);
 client.help_channel_names  = JSON.parse(process.env.HELP_CHANNEL_NAMES);
 client.help_channel_timers = Array(client.help_channel_ids.length).fill(null);
 
-client.login(process.env.BOT_TOKEN).then(initCronjobs);
+const clientCronJobs = () => initCronJobs(client);
+
+client.login(process.env.BOT_TOKEN).then(clientCronJobs);
 
 // // Define some universal constants
 // const lengthMaxBotMessages = 1000; // max message length
