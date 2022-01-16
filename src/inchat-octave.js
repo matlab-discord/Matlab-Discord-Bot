@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { exec } = require('child_process');
 const util = require('util');
-const download = require('./download')
+const download = require('./download');
 
 const lengthMaxBotMessages = 1000; // max message length
 
@@ -65,7 +65,7 @@ function octaveRun(msg, operation) {
                         // Make sure it doesn't exceed the max message length before sending
                         const msg_out = util.format('```matlab\n%s```', data);
                         if (msg_out.length >= lengthMaxBotMessages) {
-                            msg.channel.send('Command executed, but output is too long to display.');
+                            msg.channel.send({files: ['./inchat_octave/bot_out.txt']});
                         } else if (operation === 'orun') { // special case to post non formatted
                             msg.channel.send(util.format('%s', data));
                         } else {

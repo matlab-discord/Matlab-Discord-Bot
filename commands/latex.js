@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const latex = require('../src/latex');
-const download = require('../src/download')
+const download = require('../src/download');
 
 module.exports = {
     data: new SlashCommandBuilder()
