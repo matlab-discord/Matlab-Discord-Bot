@@ -1,15 +1,16 @@
-const {renderMsg: render} = require('./render')
-const { searchDocs, getNewestBlogEntry, getNewestTweet, getNewestVideo } = require('./mathworks-docs');
-const exec  = require('child_process').exec; // for sys calls
-const execSync  = require('child_process').execSync; // for synchronous sys calls
-const latex = require('../src/latex');
 const request = require('request');
-const fs = require("fs");
-const why = require("./why");
-const buildMinesweeperGrid = require("./minesweeper");
+const fs = require('fs');
+const latex = require('./latex');
+const {
+    searchDocs, getNewestBlogEntry, getNewestTweet, getNewestVideo,
+} = require('./mathworks-docs');
+const { renderMsg: render } = require('./render');
+const why = require('./why');
+const buildMinesweeperGrid = require('./minesweeper');
+const icoct = require('./inchat-octave');
 
-const download = function(uri, filename, callback){
-    request.head(uri, function(err, res, body){
+const download = function (uri, filename, callback) {
+    request.head(uri, (err, res, body) => {
         request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
     });
 };
@@ -61,6 +62,13 @@ const router = [
         }
     },
 
+    {
+    // Inchat octave (remove h for octhelp message)
+        regexp: /^!((?:oct(?=[^h]))|(?:opr)|(?:oup)|(?:orun))/,
+        use(msg, tokens) {
+            icoct.octaveExecute(msg, tokens);
+        },
+    },
 
     {
         regexp: /!(m|doc) (.+?)(\s.*)?$/, // E.g. if "!m interp1" or "!doc interp1"
