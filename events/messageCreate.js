@@ -1,70 +1,112 @@
+const mustache = require("mustache");
+const templates = require("../src/templates");
+const fs = require("fs");
+const router = require("../src/router")
+
+async function updateHelpChannels(client, channel) {
+        const chan_ind = client.help_channel_ids.indexOf(channel.id);
+
+        if(client.help_channel_timers[chan_ind] == null) {
+            const busy_chan_str = client.help_channel_names[chan_ind] + "-busy";
+            channel.setName(busy_chan_str).then(newChannel => console.log(`Changing help channel to busy, ${newChannel.name}`)).catch(console.error);
+            client.help_channel_timers[chan_ind] = setTimeout(function() {
+                console.log(`Changing help channel back to ${client.help_channel_names[chan_ind]}`)
+                channel.setName(client.help_channel_names[chan_ind]);
+                client.help_channel_timers[chan_ind] = null;
+            }, 300000);
+        }
+        else {
+            // This channel has a timer established already.  Clear it, then reset it
+            clearTimeout(client.help_channel_timers[chan_ind]);
+            client.help_channel_timers[chan_ind] = setTimeout(function() {
+                console.log(`Changing help channel back to ${client.help_channel_names[chan_ind]}`)
+                channel.setName(client.help_channel_names[chan_ind]);
+                client.help_channel_timers[chan_ind] = null;
+            }, 300000);
+        }
+}
+
+async function logBotDMs(msg) {
+    // Write message to log file.  appends new line
+    const writeLog = function(logMsg, logType) {
+        // Open a write stream for the log file. Append to the end
+        let logStream = fs.createWriteStream("log.txt", {flags: 'a'});
+        let theDate = new Date();
+        try { // Try to write the log
+            logStream.write(theDate.toLocaleString() + ": " + logType + " - " + logMsg + "\n");
+        }
+        catch(error) {
+            console.log(error);
+            logStream.write("Error writing log... " + error + "\n")
+        }
+        // End the log
+        logStream.end();
+    }
+
+    writeLog(`[${msg.author.id}, ${msg.author.username}]: ${msg.content}`, "DM");
+}
+
+
+async function regexCommandRouting(msg) {
+    let tokens;
+    let commandExecuted = false;
+
+    for (const route of router) {
+        if ((tokens = route.regexp.exec(msg.content)) !== null) {
+            route.use(msg, tokens);
+            commandExecuted = true;
+            break;
+        }
+    }
+
+    return commandExecuted;
+}
+
+async function botMention(msg) {
+    if (/(thank|thx)/.exec(msg.content)) {
+        msg.reply(mustache.render(templates['thanks.md']));
+    }
+    else if (/(hi|hello|good|sup|what's up)/.exec(msg.content)) {
+        msg.reply(mustache.render(templates['greeting.md']));
+    }
+    else {
+        msg.reply(mustache.render(templates['reply.md']));
+    }
+}
+
+async function goodBot(msg){
+    if (/(cumsum|cummin|cummax|cumtrapz|cumsec|cumprod)/.exec(msg.content) !== null) {
+        await msg.react("💦");
+    }
+    if(/clowns?/.exec(msg.content) !== null) {
+        await msg.react("🤡")
+    }
+}
+
 module.exports = {
 	name: 'messageCreate',
 	async execute(client, msg) {
         if (msg.author.bot) {
             return;
         }
-        // let tokens;
-        // let commandExecuted = false;
-    
-        // let privateMsg = false; // keep track of private messages 
-    
-        // // An empty guild indicates this is a private message. Log it
-        // if(msg.guild === null) {
-        //     // Write to log file
-        //     privateMsg = true;
-        //     var theMsg = util.format("[%s, %s]: %s", msg.author.id, msg.author.username, msg.content);
-        //     writeLog(theMsg, "DM");
-        // }
-    
-        // for (const route of router) {
-        //     if ((tokens = route.regexp.exec(msg.content)) !== null) {
-        //         route.use(msg, tokens);
-        //         commandExecuted = true;
-        //         break;
-        //     }
-        // }
-        // if ((!commandExecuted) && msg.isMentioned(client.user)) {
-        //     if (/(thank|thx)/.exec(msg.content)) {
-        //         msg.reply(mustache.render(templates['thanks.md']));
-        //     }
-        //     else if (/(hi|hello|good|sup|what's up)/.exec(msg.content)) {
-        //         msg.reply(mustache.render(templates['greeting.md']));
-        //     }
-        //     else {
-        //         msg.reply(mustache.render(templates['reply.md']));
-        //     }
-        // }
-    
-        if (/(cumsum|cummin|cummax|cumtrapz|cumsec|cumprod)/.exec(msg.content) !== null) {
-            await msg.react("💦");
+
+        // Good bot.
+        await goodBot(msg);
+
+        // An empty guild indicates this is a private message. Log it
+        if(!msg.inGuild()) {
+            await logBotDMs(msg)
         }
-        if(/clowns?/.exec(msg.content) !== null) {
-            await msg.react("🤡")
+
+        let commandExecuted = await regexCommandRouting(msg);
+
+        if ((!commandExecuted) && msg.mentions.users.has(client.user.id)) {
+            await botMention(msg)
         }
-    
-        // // Check if one of the help channels is active. Set its status to busy
-        // if((!commandExecuted) && help_channel_ids.includes(msg.channel.id)) {
-        //     var chan = msg.channel;
-        //     var chan_ind = help_channel_ids.indexOf(chan.id);
-    
-        //     if(help_channel_timers[chan_ind] == null) {
-        //         var busy_chan_str = help_channel_names[chan_ind] + "-BUSY";
-        //         chan.setName(busy_chan_str).then(newChannel => console.log(`Changing help channel to busy, ${newChannel.name}`)).catch(console.error); 
-        //         help_channel_timers[chan_ind] = setTimeout(function() {
-        //             chan.setName(help_channel_names[chan_ind]);
-        //             help_channel_timers[chan_ind] = null;
-        //         }, 300000);
-        //     }
-        //     else {
-        //         // This channel has a timer established already.  Clear it, then reset it
-        //         clearTimeout(help_channel_timers[chan_ind]);
-        //         help_channel_timers[chan_ind] = setTimeout(function() {
-        //             chan.setName(help_channel_names[chan_ind]);
-        //             help_channel_timers[chan_ind] = null;
-        //         }, 300000);
-        //     }
-    
-        // }
+
+        if ((!commandExecuted) && client.help_channel_ids.includes(msg.channel.id)) {
+            await updateHelpChannels(client, msg.channel);
+        }
+
 	},
 };

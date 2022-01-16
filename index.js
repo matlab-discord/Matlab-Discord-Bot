@@ -10,7 +10,7 @@ Set bot intents.
 const myIntents = new Intents();
 myIntents.add(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES);
 
-const client = new Client({ intents: myIntents });
+const client = new Client({ partials: ['CHANNEL'], intents: myIntents });
 
 /*
 Import in bot commands
