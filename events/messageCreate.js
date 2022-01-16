@@ -47,13 +47,13 @@ async function logBotDMs(msg) {
 }
 
 
-async function regexCommandRouting(msg) {
+async function regexCommandRouting(client, msg) {
     let tokens;
     let commandExecuted = false;
 
     for (const route of router) {
         if ((tokens = route.regexp.exec(msg.content)) !== null) {
-            route.use(msg, tokens);
+            route.use(msg, tokens, client);
             commandExecuted = true;
             break;
         }
@@ -98,7 +98,7 @@ module.exports = {
             await logBotDMs(msg)
         }
 
-        let commandExecuted = await regexCommandRouting(msg);
+        let commandExecuted = await regexCommandRouting(client, msg);
 
         if ((!commandExecuted) && msg.mentions.users.has(client.user.id)) {
             await botMention(msg)

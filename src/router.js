@@ -23,7 +23,6 @@ const router = [
             }
         }
     },
-
     {
         // Will take the last posted message and run any code found within a code block (wrapped in backticks ```)
         regexp: /^!eval(?:uate)?$/,
@@ -186,35 +185,33 @@ const router = [
             });
         }
     },
-    // {
-    //     regexp: /^!(done|close|finish|answered|exit)/, // allow users to clear the busy status of help channels
-    //     use: function(msg) {
-    //
-    //         // check if the channel is a help channel first
-    //         if(help_channel_ids.includes(msg.channel.id)) {
-    //             var chan = msg.channel;
-    //             var chan_ind = help_channel_ids.indexOf(chan.id);
-    //
-    //             // If the help channel is busy, clear its busy status
-    //             if(help_channel_timers[chan_ind] != null) {
-    //                 clearTimeout(help_channel_timers[chan_ind]);
-    //                 help_channel_timers[chan_ind] = null;
-    //                 chan.setName(help_channel_names[chan_ind]);
-    //                 msg.channel.send("Channel is available for another question.")
-    //                 msg.delete(20).catch(console.error);
-    //             }
-    //             else {
-    //                 // The user executed the command in a question channel that isn't busy
-    //                 msg.channel.send("Channel is available for another question.")
-    //                 msg.delete(20).catch(console.error);
-    //             }
-    //
-    //         }
-    //         else {
-    //             msg.channel.send("Use this command in a help-channel to clear its busy status once a question is complete.")
-    //         }
-    //     }
-    // },
+    {
+        regexp: /^!(done|close|finish|answered|exit)/, // allow users to clear the busy status of help channels
+        use: function(msg, _, client) {
+
+            if (!client.help_channel_ids.includes(msg.channel.id)) {
+                msg.channel.send("Use this command in a help-channel to clear its busy status once a question is complete.")
+            }
+
+            // check if the channel is a help channel first
+            let chan = msg.channel;
+            let chan_ind = client.help_channel_ids.indexOf(chan.id);
+
+            // If the help channel is busy, clear its busy status
+            if(client.help_channel_ids[chan_ind] != null) {
+                clearTimeout(client.help_channel_timers[chan_ind]);
+                client.help_channel_timers[chan_ind] = null;
+                chan.setName(client.help_channel_names[chan_ind]);
+                msg.channel.send("Channel is available for another question.")
+                msg.delete(20).catch(console.error);
+            }
+            else {
+                // The user executed the command in a question channel that isn't busy
+                msg.channel.send("Channel is available for another question.")
+                msg.delete(20).catch(console.error);
+            }
+        }
+    },
     {
         regexp: /^!(.+?)( .*)?$/, // E.g. any other message, pass-through (like help.md => "!help", "!help interp1", ...)
         use: function (msg, tokens) {
