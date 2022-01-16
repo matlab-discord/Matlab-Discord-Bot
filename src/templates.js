@@ -11,10 +11,4 @@ const readFiles = function (dirname, encoding = 'utf8') {
 
 const templates = readFiles('./msg/');
 
-for (let key in templates) {
-    if (templates.hasOwnProperty(key)) {
-        mustache.parse(templates[key]);
-    }
-}
-
 module.exports = templates
