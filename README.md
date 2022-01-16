@@ -37,7 +37,7 @@ The following libraries have been used:
     * [request](https://github.com/request/request)
     * [request-promise](https://github.com/request/request-promise)
 
-5. Start the bot by running the following command. (Note: Make sure that you are using **Node 16.6 or greater**.)
+5. **Be sure that you are using Node 16.9 or greater.** Start the bot by running the following command.
     ```
     node index.js
     ```
