@@ -40,9 +40,9 @@ for (const file of eventFiles) {
 /*
 Save bot channel ids
  */
-client.help_channel_ids    = ["450928036800364546", "456342124342804481", "456342247189774338", "701876298296983652", "644823196440199179", "601495308140019742", "750745113076170843", "453522391377903636"];
+client.help_channel_ids    = JSON.parse(process.env.HELP_CHANNEL_IDS);
+client.help_channel_names  = JSON.parse(process.env.HELP_CHANNEL_NAMES);
 client.help_channel_timers = Array(client.help_channel_ids.length).fill(null);
-client.help_channel_names  = ['matlab-help-1', 'matlab-help-2', 'matlab-help-3', 'matlab-help-4', 'help-channel', 'simulink-help-1', 'simulink-help-2', 'botspam'];
 
 client.login(process.env.BOT_TOKEN).then(initCronjobs);
 

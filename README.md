@@ -9,7 +9,7 @@ See [help.md](https://github.com/matlab-discord/Matlab-Discord-Bot/blob/master/m
 
 1. Clone this repository (either to your PC or a host).
 2. Create a new copy of the `.env.example` file and rename it to `.env` in the root directory.
-2. Fill in each one of the environment variables in your new `.env` file.
+3. Fill in each one of the environment variables in your new `.env` file.
 
     - #### Environment Variables
         `BOT_TOKEN` - Discord Client Secret token from the [Developer Portal](https://discord.com/developers/applications/) for your bot application.
@@ -27,6 +27,10 @@ See [help.md](https://github.com/matlab-discord/Matlab-Discord-Bot/blob/master/m
         `GUILD_ID` - This is the "test" guild which commands are immediately registered to. Due to slash command registration, if the test guild is not listed here it will take about 1 hour for Discord to register the command globally.
 
         `BOT_ID` - The user ID of the bot. This is listed in the [Developer Portal](https://discord.com/developers/applications/) as "Application ID".
+         
+         `HELP_CHANNEL_IDS` - Array containing the help channel IDs for the bot. The `.env.example` currently contains the default Matlab Discord Server IDs but these should be replaced if your setup.
+
+         `HELP_CHANNEL_NAMES`- Array containing the default help channel names. This is so that the bot can set the names back to these values after the channel has been left dormant for a period. 
 
 4. Install library dependencies with `npm install`.
 The following libraries have been used:
