@@ -20,6 +20,7 @@ async function searchDocs(query) {
         summary: suggestion.summary.join(''),
         product: suggestion.product,
         url: `https://mathworks.com/help/${suggestion.path}`,
+        path: suggestion.path,
     };
 }
 

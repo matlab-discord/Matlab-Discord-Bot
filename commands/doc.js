@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { renderInter: render } = require('../src/render');
-const { docAutocomplete } = require('../src/mathworks-docs');
+const { docAutocomplete, searchDocs } = require('../src/mathworks-docs');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,7 +12,13 @@ module.exports = {
             .setRequired(true)
             .setAutocomplete(true)),
     async execute(client, interaction) {
-        const docURL = `https://mathworks.com/help/${interaction.options.getString('query')}`;
+        let userQuery = interaction.options.getString('query');
+        // If the user inputted a none autocompleted option so that there is no .html path,
+        // then take that input and search the docs.
+        if (!(/.*\.html/.exec(userQuery))) {
+            userQuery = (await searchDocs(userQuery)).path;
+        }
+        const docURL = `https://mathworks.com/help/${userQuery}`;
         await render(interaction, 'doc.md', { url: docURL });
     },
     async autocompleteExecute(client, interaction) {
@@ -31,6 +37,8 @@ module.exports = {
             await interaction.respond(defaultChoices).catch(console.log);
             return;
         }
+
+
         await interaction.respond(searchResults).catch(console.log);
     },
 };
