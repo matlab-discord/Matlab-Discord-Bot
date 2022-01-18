@@ -1,2 +1,2 @@
-Question: {{{question}}}
+Question: Why {{{question}}}?
 Answer: {{{result}}}
