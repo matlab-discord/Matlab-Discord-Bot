@@ -176,10 +176,12 @@ const router = [
         },
     },
     {
-        regexp: /!why/,
-        use(msg) {
+        regexp: /^!why\s*(.*)$/,
+        use(msg, tokens) {
+            const str = tokens[1];
             render(msg, 'why.md', {
-                result: why(),
+		question:	str,
+                result: 	why(),
             }).catch(console.error);
         },
     },
