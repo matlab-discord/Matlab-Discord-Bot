@@ -9,6 +9,7 @@ module.exports = {
 
         console.log(`Ready! Logged in as ${client.user.tag}`);
 
-        client.user.setActivity('MATLAB 2021b', { type: 'PLAYING' });
+	//client.user.setActivity('MATLAB 2021b', { type: 'PLAYING' });
+        client.user.setActivity('Now with slash commands!', { type: 'PLAYING' });
     },
 };

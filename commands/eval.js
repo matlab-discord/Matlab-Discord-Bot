@@ -6,13 +6,12 @@ const MSG_SEARCH_LIM = 10;
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('eval')
-        .setDescription('Clear a help channel of its busy status.'),
+        .setDescription('Run the 1st codeblock found in the last 10 messages through MATLAB.'),
     async execute(client, interaction) {
-        const messages = await interaction.channel.messages.fetch({ limit: MSG_SEARCH_LIM + 1 }); // +1 because we account for the message that called the eval...
+        const messages = await interaction.channel.messages.fetch({ limit: MSG_SEARCH_LIM+1}); // +1 because we account for the message that called the eval...
         const oldMessages = Array.from(messages.entries(), item => item[1].content);
-        oldMessages.splice(0, 1);
 
-        const codeSearchRegexp = /```(?:matlab)?(?:\nmatlab)?((\w|\s|\S)*)```/; // regexp to parse user code between code blocks
+        const codeSearchRegexp = /\`\`\`(?:matlab)?(?:\nmatlab)?((\w|\s|\S)*)\`\`\`/; // regexp to parse user code between code blocks
         const matchedMessage = oldMessages.find( codeMsg => codeMsg.match(codeSearchRegexp) );
 
         if (!matchedMessage) {
