@@ -8,7 +8,7 @@ module.exports = {
         .setName('eval')
         .setDescription('Run the 1st codeblock found in the last 10 messages through MATLAB.'),
     async execute(client, interaction) {
-        const messages = await interaction.channel.messages.fetch({ limit: MSG_SEARCH_LIM+1}); // +1 because we account for the message that called the eval...
+        const messages = await interaction.channel.messages.fetch({ limit: MSG_SEARCH_LIM}); // +1 because we account for the message that called the eval...
         const oldMessages = Array.from(messages.entries(), item => item[1].content);
 
         const codeSearchRegexp = /\`\`\`(?:matlab)?(?:\nmatlab)?((\w|\s|\S)*)\`\`\`/; // regexp to parse user code between code blocks
