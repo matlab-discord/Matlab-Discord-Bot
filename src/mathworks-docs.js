@@ -4,11 +4,17 @@ const fetch = require('./fetch');
 async function docAutocomplete(query) {
     const queryURL = `https://mathworks.com/help/search/suggest/doccenter/en/R2021b?q=${encodeURIComponent(query)}`;
     const d = await fetch(queryURL, 'json');
-    const docSuggestions = d.pages.flatMap((page) => page.suggestions.map((suggestion) => ({
-        name: `${suggestion.product} - ${suggestion.title.join('')}`,
-        value: suggestion.path,
-    })));
-    return [...new Set(docSuggestions)];
+    const docSuggestions = d.pages.flatMap(
+        (page) => page.suggestions.map(
+            (suggestion) => (
+                {
+                    name: `${suggestion.product} - ${(/\/([0-9a-zA-Z.]*)\.html/.exec(suggestion.path))[1]}`,
+                    value: suggestion.path,
+                }
+            )
+        )
+    );
+    return docSuggestions;
 }
 
 async function searchDocs(query) {
