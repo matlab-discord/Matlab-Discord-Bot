@@ -38,7 +38,6 @@ module.exports = {
             return;
         }
 
-
         await interaction.respond(searchResults).catch(console.log);
     },
 };
