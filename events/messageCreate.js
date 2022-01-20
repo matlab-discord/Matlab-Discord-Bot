@@ -78,6 +78,16 @@ async function goodBot(msg) {
     }
 }
 
+async function spamBait(msg) {
+    if (msg.channelId === process.env.SPAM_BAIT_CHANNEL_ID) {
+        const muteRole = msg.member.guild.roles.cache.find(role => role.id === process.env.MUTE_ROLE_ID);
+        if (!muteRole) {
+            console.error('Cannot find Mute role');
+        }
+        msg.member.roles.add(muteRole);
+    }
+}
+
 module.exports = {
     name: 'messageCreate',
     async execute(client, msg) {
@@ -87,6 +97,9 @@ module.exports = {
 
         // Good bot.
         await goodBot(msg);
+
+        // Mute bot spam bait messages
+        await spamBait(msg);
 
         // An empty guild indicates this is a private message. Log it
         if (!msg.inGuild()) {

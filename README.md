@@ -32,6 +32,10 @@ See [help.md](https://github.com/matlab-discord/Matlab-Discord-Bot/blob/master/m
 
          `HELP_CHANNEL_NAMES`- Array containing the default help channel names. This is so that the bot can set the names back to these values after the channel has been left dormant for a period. 
 
+         `SPAM_BAIT_CHANNEL_ID` - Channel ID for spam bait to prevent automatic bot spam messages from sending too many messages in the server.
+   
+         `MUTE_ROLE_ID` - Role ID to be added to users that send messages in the spam bait channel to prevent them from sending more messages and spamming the server.
+
 4. Install library dependencies with `npm install`.
 The following libraries have been used:
     * [cheerio](https://github.com/cheeriojs/cheerio)
