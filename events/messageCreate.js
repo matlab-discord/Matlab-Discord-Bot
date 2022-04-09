@@ -70,9 +70,6 @@ async function botMention(msg) {
 }
 
 async function goodBot(msg) {
-    if (/(cumsum|cummin|cummax|cumtrapz|cumsec|cumprod)/.exec(msg.content) !== null) {
-        await msg.react('💦');
-    }
     if (/clowns?/.exec(msg.content) !== null) {
         await msg.react('🤡');
     }
