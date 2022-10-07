@@ -2,7 +2,7 @@ const request = require('request-promise');
 const fetch = require('./fetch');
 
 async function docAutocomplete(query) {
-    const queryURL = `https://mathworks.com/help/search/suggest/doccenter/en/R2021b?q=${encodeURIComponent(query)}`;
+    const queryURL = `https://mathworks.com/help/search/suggest/doccenter/en/R2022b?q=${encodeURIComponent(query)}`;
     const d = await fetch(queryURL, 'json');
     const docSuggestions = d.pages.flatMap(
         (page) => page.suggestions.map(
@@ -18,7 +18,7 @@ async function docAutocomplete(query) {
 }
 
 async function searchDocs(query) {
-    const queryURL = `https://mathworks.com/help/search/suggest/doccenter/en/R2021b?q=${encodeURIComponent(query)}`;
+    const queryURL = `https://mathworks.com/help/search/suggest/doccenter/en/R2022b?q=${encodeURIComponent(query)}`;
     const d = await fetch(queryURL, 'json');
     const suggestion = d.pages[0].suggestions[0];
     return {

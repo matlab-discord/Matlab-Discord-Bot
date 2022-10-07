@@ -6,7 +6,7 @@ const MSG_SEARCH_LIM = 10;
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('wrap')
-        .setDescription('Warps the message sent N messages ago in Matlab backticks ```')
+        .setDescription('Wraps the message sent N messages ago in Matlab backticks ```')
         .addNumberOption((option) => option
             .setName('n_messages_ago')
             .setDescription('Message to be wrapped in ```')
@@ -14,7 +14,7 @@ module.exports = {
             .setMinValue(1)
             .setMaxValue(MSG_SEARCH_LIM)),
     async execute(client, interaction) {
-        const nthMessage = interaction.options.getNumber('n_messages_ago');
+        const nthMessage = interaction.options.getInteger('n_messages_ago');
         let messages = await interaction.channel.messages.fetch({ limit: MSG_SEARCH_LIM});
         messages = Array.from(messages.entries(), msg => msg[1]);
         if (messages[nthMessage - 1].author.bot) {

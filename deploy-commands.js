@@ -18,7 +18,7 @@ for (const file of commandFiles) {
         if (command.data.name === 'wrap') {
             const wrapCommand = {
                 name: 'wrap',
-                description: 'Warps the message sent N messages ago in Matlab backticks ```',
+                description: 'Wraps the message sent N messages ago in Matlab backticks ```',
                 options: [
                     {
                         max_value: 10,
