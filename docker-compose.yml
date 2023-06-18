@@ -1,0 +1,4 @@
+version: '2'
+services:
+  app:
+    image: node:20-alpine

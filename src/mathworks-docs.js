@@ -30,6 +30,33 @@ async function searchDocs(query) {
     };
 }
 
+async function answersAutocomplete(query) {
+    const queryURL = `https://api.mathworks.com/community/v1/search?scope=matlab-answers&sort_order=relevance+desc&query=${encodeURIComponent(query)}`;
+    const d = await fetch(queryURL, 'json');
+    const docSuggestions = d.items.flatMap(
+        (item) => map(
+            {
+                name: `${item.scope}: ${item.title}`,
+                value: item.url,
+            }
+        )
+    );
+    return docSuggestions;
+}
+
+async function searchAnswers(query) {
+    const queryURL = `https://api.mathworks.com/community/v1/search?scope=matlab-answers&sort_order=relevance+desc&query=${encodeURIComponent(query)}`;
+    const d = await fetch(queryURL, 'json');
+    const suggestion = d.items[0]
+    return {
+        title: suggestion.title,
+        description: suggestion.summary,
+        product: suggestion.product,
+        url: suggestion.url,
+        description: suggestion.description,
+    };
+}
+
 // Grabbing latest blog entry
 async function getNewestBlogEntry() {
     const d = await fetch('https://blogs.mathworks.com/');
@@ -103,6 +130,8 @@ function parseDate(date) {
 module.exports = {
     docAutocomplete,
     searchDocs,
+    answersAutocomplete,
+    searchAnswers,
     getNewestBlogEntry,
     getNewestTweet,
     getNewestVideo,
