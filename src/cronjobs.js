@@ -27,6 +27,11 @@ const cronjobs = [
     },
 ];
 
+if (!fs.existsSync(cronjob_data_file)) {
+	console.log("Couldn't find cronjob data file, creating empty version");
+	fs.writeFileSync(cronjob_data_file, "{}", "utf8");
+}
+
 const cronjob_data = JSON.parse(fs.readFileSync(cronjob_data_file, 'utf8'));
 
 module.exports = {
