@@ -110,6 +110,11 @@ async function getNewestTweet() {
 async function getNewestVideo() {
     // Grab the google APIs token
     const token = process.env.YOUTUBE_AUTH_KEY;
+    if (token == "")
+    {
+        return {};
+    }
+
     const video = (await fetch(`https://www.googleapis.com/youtube/v3/search?key=${token}&channelId=UCgdHSFcXvkN6O3NXvif0-pA&part=snippet,id&order=date&maxResults=1`, 'json')).items[0];
     return {
         title: video.snippet.title,
