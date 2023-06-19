@@ -2,6 +2,7 @@ version: '3'
 services:
   matlab-discord-bot:
     image: matlab-discord-bot:1.0.3
+    build: .
     env_file: 
       - .env
       

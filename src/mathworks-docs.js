@@ -34,7 +34,7 @@ async function answersAutocomplete(query) {
     const queryURL = `https://api.mathworks.com/community/v1/search?scope=matlab-answers&sort_order=relevance+desc&query=${encodeURIComponent(query)}`;
     const d = await fetch(queryURL, 'json');
     const docSuggestions = d.items.flatMap(
-        (item) => map(
+        (item) => (
             {
                 name: `${item.scope}: ${item.title}`,
                 value: item.url,
@@ -110,11 +110,6 @@ async function getNewestTweet() {
 async function getNewestVideo() {
     // Grab the google APIs token
     const token = process.env.YOUTUBE_AUTH_KEY;
-    if (token == "")
-    {
-        return {};
-    }
-
     const video = (await fetch(`https://www.googleapis.com/youtube/v3/search?key=${token}&channelId=UCgdHSFcXvkN6O3NXvif0-pA&part=snippet,id&order=date&maxResults=1`, 'json')).items[0];
     return {
         title: video.snippet.title,

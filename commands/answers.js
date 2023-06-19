@@ -12,11 +12,11 @@ module.exports = {
             .setRequired(true)
             .setAutocomplete(true)),
     async execute(client, interaction) {
-        let userQuery = interaction.options.getString('question');
+        let docURL = interaction.options.getString('question');
         // If the user inputted a none autocompleted option so that there is no .html path,
         // then take that input and search the docs.
-        if (!(/.*\.html/.exec(userQuery))) {
-            docURL = (await searchAnswers(userQuery)).url;
+        if (!docURL.startsWith("https://www.mathworks.com")) {
+            return;
         }
 
         await render(interaction, 'doc.md', { url: docURL });
