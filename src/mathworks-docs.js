@@ -2,7 +2,7 @@ const request = require('request-promise');
 const fetch = require('./fetch');
 
 async function docAutocomplete(query) {
-    const queryURL = `https://mathworks.com/help/search/suggest/doccenter/en/R2022b?q=${encodeURIComponent(query)}`;
+    const queryURL = `https://mathworks.com/help/search/suggest/doccenter/en/R2023a?q=${encodeURIComponent(query)}`;
     const d = await fetch(queryURL, 'json');
     const docSuggestions = d.pages.flatMap(
         (page) => page.suggestions.map(
@@ -18,7 +18,7 @@ async function docAutocomplete(query) {
 }
 
 async function searchDocs(query) {
-    const queryURL = `https://mathworks.com/help/search/suggest/doccenter/en/R2022b?q=${encodeURIComponent(query)}`;
+    const queryURL = `https://mathworks.com/help/search/suggest/doccenter/en/R2023a?q=${encodeURIComponent(query)}`;
     const d = await fetch(queryURL, 'json');
     const suggestion = d.pages[0].suggestions[0];
     return {
@@ -27,6 +27,33 @@ async function searchDocs(query) {
         product: suggestion.product,
         url: `https://mathworks.com/help/${suggestion.path}`,
         path: suggestion.path,
+    };
+}
+
+async function answersAutocomplete(query) {
+    const queryURL = `https://api.mathworks.com/community/v1/search?scope=matlab-answers&sort_order=relevance+desc&query=${encodeURIComponent(query)}`;
+    const d = await fetch(queryURL, 'json');
+    const docSuggestions = d.items.flatMap(
+        (item) => (
+            {
+                name: `${item.scope}: ${item.title}`,
+                value: item.url,
+            }
+        )
+    );
+    return docSuggestions;
+}
+
+async function searchAnswers(query) {
+    const queryURL = `https://api.mathworks.com/community/v1/search?scope=matlab-answers&sort_order=relevance+desc&query=${encodeURIComponent(query)}`;
+    const d = await fetch(queryURL, 'json');
+    const suggestion = d.items[0]
+    return {
+        title: suggestion.title,
+        description: suggestion.summary,
+        product: suggestion.product,
+        url: suggestion.url,
+        description: suggestion.description,
     };
 }
 
@@ -103,6 +130,8 @@ function parseDate(date) {
 module.exports = {
     docAutocomplete,
     searchDocs,
+    answersAutocomplete,
+    searchAnswers,
     getNewestBlogEntry,
     getNewestTweet,
     getNewestVideo,
