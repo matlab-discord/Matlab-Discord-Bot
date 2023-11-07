@@ -9,6 +9,7 @@ module.exports = {
 
         if (channel instanceof TextChannel) {
             channel.threads.setArchived(true); // archived
+            interaction.reply('This thread has been marked closed.');
         }       else {
             interaction.reply('This channel is not a valid channel to use closteThread');
         }
