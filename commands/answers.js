@@ -13,8 +13,8 @@ module.exports = {
             .setAutocomplete(true)),
     async execute(client, interaction) {
         let userQuery = interaction.options.getString('question');
-        // If the user inputted a none autocompleted option so that there is o path,
-        // then take that input and search the answers query outselves
+        // If the user inputted no autocomplete option such that there is no URL provided value,
+        // then take that input and search the answers query ourselves.
         if (!userQuery.startsWith("answers")) {
             userQuery = (await searchAnswers(userQuery));
         } else {
