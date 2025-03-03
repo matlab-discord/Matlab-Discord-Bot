@@ -5,27 +5,31 @@ const { getNewestBlogEntry, getNewestTweet, getNewestVideo } = require('./mathwo
 
 const cronjob_data_file = './storage/cronjob_data.json';
 
-const cronjobs = [
-    {
-        name: 'Blog',
-        use: getNewestBlogEntry,
-        interval: 3 * 3600 * 1e3,
-        template: 'blog.md',
-        errors: [],
-    }, {
-        name: 'Twitter',
-        use: getNewestTweet,
-        interval: 1 * 3600 * 1e3,
-        template: 'twitter.md',
-        errors: [],
-    }, {
-        name: 'Youtube',
-        use: getNewestVideo,
-        interval: 2 * 3600 * 1e3,
-        template: 'youtube.md',
-        errors: [],
-    },
-];
+// const cronjobs = [
+//     {
+//         name: 'Blog',
+//         use: getNewestBlogEntry,
+//         interval: 3 * 3600 * 1e3,
+//         template: 'blog.md',
+//         errors: [],
+//     }, {
+//         name: 'Twitter',
+//         use: getNewestTweet,
+//         interval: 1 * 3600 * 1e3,
+//         template: 'twitter.md',
+//         errors: [],
+//     }, {
+//         name: 'Youtube',
+//         use: getNewestVideo,
+//         interval: 2 * 3600 * 1e3,
+//         template: 'youtube.md',
+//         errors: [],
+//     },
+// ];
+
+// TODO - Mathworks cut us off from all the API's :'( sad day
+// Twitter API is dead as well
+const cronjobs = [];
 
 if (!fs.existsSync(cronjob_data_file)) {
 	console.log("Couldn't find cronjob data file, creating empty version");

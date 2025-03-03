@@ -12,14 +12,16 @@ module.exports = {
             .setRequired(true)
             .setAutocomplete(true)),
     async execute(client, interaction) {
-        let docURL = interaction.options.getString('question');
-        // If the user inputted a none autocompleted option so that there is no .html path,
-        // then take that input and search the docs.
-        if (!docURL.startsWith("https://www.mathworks.com")) {
-            return;
+        let userQuery = interaction.options.getString('question');
+        // If the user inputted a none autocompleted option so that there is o path,
+        // then take that input and search the answers query outselves
+        if (!userQuery.startsWith("answers")) {
+            userQuery = (await searchAnswers(userQuery));
+        } else {
+            userQuery = {url: `https://www.mathworks.com/matlabcentral/${userQuery}`};
         }
 
-        await render(interaction, 'doc.md', { url: docURL });
+        await render(interaction, 'doc.md', { url: userQuery.url});
     },
     async autocompleteExecute(client, interaction) {
         const defaultChoices = [{

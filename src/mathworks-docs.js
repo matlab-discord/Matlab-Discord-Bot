@@ -1,9 +1,47 @@
 const request = require('request-promise');
-const fetch = require('./fetch');
+const DOC_VER = "R2025a";
+// Enum const to differentiate between OK and FAILED responses
+const RESPONSE = {
+    OK: true,
+    FAIL: false
+}
+
+// Private generalized query function
+async function __docQuery(queryURL) {
+    // Spoofing the query to get through akami firewall.... It doesn't like bot request :'(
+    const response = await fetch(queryURL, {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+            'Referer': 'https://www.mathworks.com/',
+            'Accept': 'application/json'
+        }
+    });
+
+    if (!response.ok) {
+        return (
+            {
+                url: `HTTP error! Status: ${response.status} - ${response.statusText}`,
+                response: RESPONSE.FAIL
+            });
+    }
+    const data = await response.json(); // Correct way to parse JSON
+    let _check = data.pages || data.items;
+    if (!_check || _check.length === 0) {
+        return ({
+            url: "No information found in the response data.",
+            response: RESPONSE.FAIL
+
+        })
+    }
+
+    // Add in the response information
+    data.response = RESPONSE.OK;
+    return data;
+}
 
 async function docAutocomplete(query) {
-    const queryURL = `https://mathworks.com/help/search/suggest/doccenter/en/R2023a?q=${encodeURIComponent(query)}`;
-    const d = await fetch(queryURL, 'json');
+    const queryURL = `https://mathworks.com/help/search/suggest/doccenter/en/${DOC_VER}?q=${encodeURIComponent(query)}`;
+    const d = await __docQuery(queryURL);
     const docSuggestions = d.pages.flatMap(
         (page) => page.suggestions.map(
             (suggestion) => (
@@ -18,9 +56,9 @@ async function docAutocomplete(query) {
 }
 
 async function searchDocs(query) {
-    const queryURL = `https://mathworks.com/help/search/suggest/doccenter/en/R2023a?q=${encodeURIComponent(query)}`;
-    const d = await fetch(queryURL, 'json');
-    const suggestion = d.pages[0].suggestions[0];
+    const queryURL = `https://mathworks.com/help/search/suggest/doccenter/en/${DOC_VER}?q=${encodeURIComponent(query)}`;
+    const data = await __docQuery(queryURL);
+    const suggestion = data.pages[0].suggestions[0];
     return {
         title: suggestion.title.join(''),
         summary: suggestion.summary.join(''),
@@ -32,22 +70,28 @@ async function searchDocs(query) {
 
 async function answersAutocomplete(query) {
     const queryURL = `https://api.mathworks.com/community/v1/search?scope=matlab-answers&sort_order=relevance+desc&query=${encodeURIComponent(query)}`;
-    const d = await fetch(queryURL, 'json');
-    const docSuggestions = d.items.flatMap(
-        (item) => (
-            {
+    const data = await __docQuery(queryURL);
+    // Discord answer value suggestions are capped at 100 characters. Makes it so we are unable to supply the full URL. Need to chunk it and reconstruct on the other end..
+    const docSuggestions = data.items.flatMap(
+        (item) => {
+            const url = item.url;
+            const lastSlash = url.lastIndexOf('/');
+            const secondLastSlash = url.lastIndexOf('/', lastSlash - 1);
+            const extractedValue = secondLastSlash !== -1 ? url.slice(secondLastSlash + 1) : url;
+
+            return {
                 name: `${item.scope}: ${item.title}`,
-                value: item.url,
+                value: extractedValue
             }
-        )
+        }
     );
     return docSuggestions;
 }
 
 async function searchAnswers(query) {
     const queryURL = `https://api.mathworks.com/community/v1/search?scope=matlab-answers&sort_order=relevance+desc&query=${encodeURIComponent(query)}`;
-    const d = await fetch(queryURL, 'json');
-    const suggestion = d.items[0]
+    const data = await __docQuery(queryURL);
+    const suggestion = data.items[0]
     return {
         title: suggestion.title,
         description: suggestion.summary,
@@ -59,7 +103,7 @@ async function searchAnswers(query) {
 
 // Grabbing latest blog entry
 async function getNewestBlogEntry() {
-    const d = await fetch('https://blogs.mathworks.com/');
+    const d = await (await fetch('https://blogs.mathworks.com/')).json();
     const [, , date] = /^(.*?)on (.+)$/.exec(d('.blogger-name').eq(0).text().trim());
     const a = d('.post-title > a').eq(0);
     return {
@@ -80,7 +124,7 @@ async function getNewestTweet() {
             bearer: process.env.TWITTER_BEARER_TOKEN,
         },
     }).then((body) => {
-    // If there was an error, return JSON with "error" field
+        // If there was an error, return JSON with "error" field
         if (!('data' in body)) {
             throw ('No tweets found in last 7 days from API request. (Account is no longer active?)');
         }
@@ -99,7 +143,7 @@ async function getNewestTweet() {
         // Kinda dumb way to handle this, but it works good 'nuff
         throw ('Account only contains retweets');
     }).catch((err) => {
-    // Want to throw the other errors so that they are caught by the cronjob
+        // Want to throw the other errors so that they are caught by the cronjob
         throw (err);
     });
 
@@ -110,7 +154,9 @@ async function getNewestTweet() {
 async function getNewestVideo() {
     // Grab the google APIs token
     const token = process.env.YOUTUBE_AUTH_KEY;
-    const video = (await fetch(`https://www.googleapis.com/youtube/v3/search?key=${token}&channelId=UCgdHSFcXvkN6O3NXvif0-pA&part=snippet,id&order=date&maxResults=1`, 'json')).items[0];
+    const queryURL = "https://www.googleapis.com/youtube/v3/search?key=${token}&channelId=UCgdHSFcXvkN6O3NXvif0-pA&part=snippet,id&order=date&maxResults=1";
+    const response = await fetch(queryURL);
+    const video = response.json().items[0];
     return {
         title: video.snippet.title,
         description: video.snippet.description,
